@@ -48,6 +48,8 @@ public class Task {
     @JoinColumn(name = "con_id", nullable = false)
     private Project project;
 
+    private boolean deadlineNotified = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ngu_id")
     private User assignee;

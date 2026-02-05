@@ -27,4 +27,6 @@ public class UserRequestDTO {
     private Boolean isAdmin;
 
     private String avatar;
+
+    private boolean deleted;
 }

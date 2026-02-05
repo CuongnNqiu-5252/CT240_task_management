@@ -17,8 +17,7 @@ public interface UserMapper {
 
     List<UserResponseDTO> toDTOList(List<User> users);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "deleted", ignore = true)
+    @Mapping(source ="deleted", target = "deleted", ignore = true)
     @Mapping(target = "createdTasks", ignore = true)
     @Mapping(target = "assignedTasks", ignore = true)
     @Mapping(target = "comments", ignore = true)

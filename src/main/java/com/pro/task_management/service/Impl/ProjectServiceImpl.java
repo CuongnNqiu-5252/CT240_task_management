@@ -1,4 +1,4 @@
-package com.pro.task_management.service;
+package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
@@ -7,6 +7,7 @@ import com.pro.task_management.enums.ProjectStatus;
 import com.pro.task_management.exception.ResourceNotFoundException;
 import com.pro.task_management.mapper.ProjectMapper;
 import com.pro.task_management.repository.ProjectRepository;
+import com.pro.task_management.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
