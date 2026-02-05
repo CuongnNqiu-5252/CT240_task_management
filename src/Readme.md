@@ -13,7 +13,7 @@ A comprehensive Spring Boot REST API for managing projects, tasks, users, and te
 
 ## 🛠 Technology Stack
 
-- **Java**: 17
+- **Java**: 25
 - **Spring Boot**: 3.2.1
 - **Spring Data JPA**: Hibernate ORM
 - **PostgreSQL**: Database
