@@ -1,14 +1,19 @@
 package com.pro.task_management.controller;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.response.ApiResponse;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
 import com.pro.task_management.enums.ProjectStatus;
 import com.pro.task_management.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -32,8 +37,13 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProjectResponseDTO>> getAllProjects() {
-        List<ProjectResponseDTO> response = projectService.getAllProjects();
+    public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getAllProjects(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        ApiResponse<List<ProjectResponseDTO>> response = projectService.getAllProjects(page, size);
+
         return ResponseEntity.ok(response);
     }
 

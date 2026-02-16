@@ -1,6 +1,8 @@
 package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.response.ApiResponse;
+import com.pro.task_management.dto.response.Pagination;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
 import com.pro.task_management.entity.Project;
 import com.pro.task_management.enums.ProjectStatus;
@@ -9,6 +11,9 @@ import com.pro.task_management.mapper.ProjectMapper;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +47,28 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProjectResponseDTO> getAllProjects() {
-        List<Project> projects = projectRepository.findAll();
-        return projectMapper.toDTOList(projects);
+    public ApiResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Project> projectPage = projectRepository.findAll(pageable);
+//        List<Project> projects = projectRepository.findAll();
+
+        List<ProjectResponseDTO> projectsDTO = projectPage.getContent().stream()
+                .map(project -> projectMapper.toDTO(project))
+                .toList();
+
+        Pagination pagination = Pagination.builder()
+                .currentPage(page)
+                .size(size)
+                .totalElements(projectPage.getTotalElements())
+                .totalPages(projectPage.getTotalPages())
+                .build();
+
+        return ApiResponse.<List<ProjectResponseDTO>>builder()
+                .data(projectsDTO)
+                .paging(pagination)
+                .message("Projects retrieved successfully")
+                .build();
     }
 
     @Override
