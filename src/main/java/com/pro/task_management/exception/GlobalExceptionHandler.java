@@ -29,6 +29,11 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(value = AppException.class)
+    ResponseEntity handlerAppException(AppException appException){
+        var msg = appException.getMessage();
+        return ResponseEntity.badRequest().body(msg);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(

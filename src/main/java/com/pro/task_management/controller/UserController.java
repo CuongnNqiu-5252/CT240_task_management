@@ -1,21 +1,27 @@
 package com.pro.task_management.controller;
 
 import com.pro.task_management.dto.request.UserRequestDTO;
+import com.pro.task_management.dto.request.UserUpdateRequestDTO;
 import com.pro.task_management.dto.response.UserResponseDTO;
+import com.pro.task_management.service.CloudinaryService;
 import com.pro.task_management.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-
+    private final CloudinaryService cloudinaryService;
     private final UserService userService;
 
     @PostMapping
@@ -42,10 +48,22 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable String id,
-            @Valid @RequestBody UserRequestDTO requestDTO) {
+            @ModelAttribute UserUpdateRequestDTO requestDTO,
+            @RequestParam(value = "image", required = false) MultipartFile file) {
+
+        String imageUrl = "";
+
+        // Nếu có file thì upload
+        if (file != null && !file.isEmpty()) {
+            Map data = cloudinaryService.upload(file);
+            imageUrl = data.get("secure_url").toString();
+        }
+
+        requestDTO.setAvatar(imageUrl);
+
         UserResponseDTO response = userService.updateUser(id, requestDTO);
         return ResponseEntity.ok(response);
     }
