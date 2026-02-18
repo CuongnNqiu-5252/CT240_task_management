@@ -1,9 +1,8 @@
-package com.pro.task_management.dto.response;
+package com.pro.task_management.dto.request;
 
 import com.pro.task_management.enums.Role;
 import lombok.*;
-
-import java.util.Set;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Getter
@@ -11,13 +10,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponseDTO {
 
-    private String id;
+public class UserUpdateRequestDTO {
     private String username;
     private String email;
     private String avatar;
-    private Boolean deleted;
-    private String password;
     private Role role;
 }
