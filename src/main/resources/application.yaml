@@ -1,3 +1,5 @@
+debug: true
+
 spring:
   datasource:
     #    url: jdbc:postgresql://dpg-d5unult6ubrc73bt1rq0-a.singapore-postgres.render.com:5432/task_management_0ok9?sslmode=require
