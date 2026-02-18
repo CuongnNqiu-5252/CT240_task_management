@@ -1,8 +1,9 @@
 package com.pro.task_management.service;
 
 
-
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.response.ApiResponse;
+import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
 import com.pro.task_management.enums.ProjectStatus;
 
@@ -14,7 +15,7 @@ public interface ProjectService {
 
     ProjectResponseDTO getProjectById(String id);
 
-    List<ProjectResponseDTO> getAllProjects();
+    PageResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size);
 
     List<ProjectResponseDTO> getProjectsByStatus(ProjectStatus status);
 

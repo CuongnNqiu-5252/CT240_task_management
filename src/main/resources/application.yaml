@@ -1,8 +1,14 @@
+debug: true
+
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-d5unult6ubrc73bt1rq0-a.singapore-postgres.render.com:5432/task_management_0ok9?sslmode=require
-    username: task_management_0ok9_user
-    password: lxy0Sh84Koesc2w4aVYOspTVMqzwJaz3
+    #    url: jdbc:postgresql://dpg-d5unult6ubrc73bt1rq0-a.singapore-postgres.render.com:5432/task_management_0ok9?sslmode=require
+    #    username: task_management_0ok9_user
+    #    password: lxy0Sh84Koesc2w4aVYOspTVMqzwJaz3
+    #    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://db.knxxlzouxoflrhcaejhv.supabase.co/postgres?sslmode=require
+    username: postgres
+    password: ct240_trucllo
     driver-class-name: org.postgresql.Driver
 
   jpa:
