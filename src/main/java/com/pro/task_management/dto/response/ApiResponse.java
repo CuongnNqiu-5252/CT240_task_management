@@ -29,5 +29,5 @@ public class ApiResponse<T> {
     String message;
     T data;
     List<String> errors;
-    Pagination paging;
+    Pagination pagination;
 }

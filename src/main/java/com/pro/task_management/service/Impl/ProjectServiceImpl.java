@@ -2,6 +2,7 @@ package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
 import com.pro.task_management.dto.response.ApiResponse;
+import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.Pagination;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
 import com.pro.task_management.entity.Project;
@@ -47,27 +48,26 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional(readOnly = true)
-    public ApiResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size) {
+    public PageResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size) {
+
+
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Project> projectPage = projectRepository.findAll(pageable);
-//        List<Project> projects = projectRepository.findAll();
 
         List<ProjectResponseDTO> projectsDTO = projectPage.getContent().stream()
-                .map(project -> projectMapper.toDTO(project))
+                .map(projectMapper::toDTO)
                 .toList();
 
         Pagination pagination = Pagination.builder()
-                .currentPage(page)
                 .size(size)
                 .totalElements(projectPage.getTotalElements())
                 .totalPages(projectPage.getTotalPages())
                 .build();
 
-        return ApiResponse.<List<ProjectResponseDTO>>builder()
+        return PageResponse.<List<ProjectResponseDTO>>builder()
                 .data(projectsDTO)
-                .paging(pagination)
-                .message("Projects retrieved successfully")
+                .pagination(pagination)
                 .build();
     }
 

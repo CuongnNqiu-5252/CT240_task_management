@@ -4,13 +4,11 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Pagination {
-    int page;
-    int size;
-    long totalElements;
-    int totalPages;
+public class PageResponse<T> {
+    Pagination pagination;
+    T data;
 }
