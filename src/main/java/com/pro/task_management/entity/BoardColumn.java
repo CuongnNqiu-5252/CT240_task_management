@@ -2,12 +2,11 @@ package com.pro.task_management.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "cotbang")
+@Table(name = "boardCol")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,6 +23,6 @@ public class BoardColumn {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "con_id", nullable = false)
+    @JoinColumn(name = "pro_id", nullable = false)
     private Project project;
 }

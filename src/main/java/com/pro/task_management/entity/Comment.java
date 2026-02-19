@@ -3,13 +3,12 @@ package com.pro.task_management.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "binhluan")
+@Table(name = "comment")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,10 +30,10 @@ public class Comment {
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ngu_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "con_id", nullable = false)
+    @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 }

@@ -3,13 +3,12 @@ package com.pro.task_management.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "cot")
+@Table(name = "notification")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,7 +21,7 @@ public class Notification {
     @Column(name = "id", updatable = false, nullable = false)
     private String id;
 
-    @Column(name = "cotent", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @CreationTimestamp

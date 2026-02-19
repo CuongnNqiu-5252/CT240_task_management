@@ -2,6 +2,8 @@ package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.UserRequestDTO;
 import com.pro.task_management.dto.request.UserUpdateRequestDTO;
+import com.pro.task_management.dto.response.PageResponse;
+import com.pro.task_management.dto.response.Pagination;
 import com.pro.task_management.dto.response.UserResponseDTO;
 import com.pro.task_management.entity.User;
 import com.pro.task_management.enums.Role;
@@ -11,6 +13,9 @@ import com.pro.task_management.mapper.UserMapper;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,9 +55,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponseDTO> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return userMapper.toDTOList(users);
+    public PageResponse<List<UserResponseDTO>> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> users = userRepository.findAll(pageable);
+        List<UserResponseDTO> userResponseDTOS = users.getContent()
+                .stream().map(user -> userMapper.toDTO(user))
+                .toList();
+        Pagination pagination = Pagination.builder()
+                .size(size)
+                .totalElements(users.getTotalElements())
+                .totalPages(users.getTotalPages())
+                .build();
+        return PageResponse.<List<UserResponseDTO>>builder()
+                .data(userResponseDTOS)
+                .pagination(pagination)
+                .build();
     }
 
     @Override
