@@ -1,0 +1,13 @@
+services:
+  app-management:
+    build: .
+    container_name: task-management-container
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    environment:
+      - JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8
