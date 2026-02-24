@@ -46,6 +46,14 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.toDTO(project);
     }
 
+//    @Override
+//    @Transactional(readOnly = true)
+//    public PageResponse<List<ProjectResponseDTO>> getProjectsByUserId(String userId, int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//
+//        Page<Project> projectPage = projectRepository.findByUserId(userId, pageable);
+//    }
+
     @Override
     @Transactional(readOnly = true)
     public PageResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size) {

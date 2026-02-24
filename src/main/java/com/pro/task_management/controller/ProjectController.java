@@ -48,6 +48,11 @@ public class ProjectController {
         return ResponseEntity.ok(ApiResponse.<List<ProjectResponseDTO>>builder().data(serviceResponse.getData()).pagination(serviceResponse.getPagination()).message("Projects retrieved successfully").build());
     }
 
+//    @GetMapping("/user/{userId}")
+//    public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getProjectsByUserId(@PathVariable String userId) {
+//        List<ProjectResponseDTO>
+//    }
+
     @GetMapping("/status/{status}")
     public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getProjectsByStatus(@PathVariable ProjectStatus status) {
         List<ProjectResponseDTO> response = projectService.getProjectsByStatus(status);

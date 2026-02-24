@@ -15,6 +15,8 @@ public interface ProjectService {
 
     ProjectResponseDTO getProjectById(String id);
 
+//    PageResponse<List<ProjectResponseDTO>> getProjectsByUserId(String userId, int page, int size);
+
     PageResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size);
 
     List<ProjectResponseDTO> getProjectsByStatus(ProjectStatus status);
