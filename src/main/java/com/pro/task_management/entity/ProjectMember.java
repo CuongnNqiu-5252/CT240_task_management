@@ -31,38 +31,6 @@ public class ProjectMember {
     @Builder.Default
     private ProjectRole role = ProjectRole.MEMBER;
 
-    public ProjectMemberId getId() {
-        return id;
-    }
-
-    public void setId(ProjectMemberId id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public ProjectRole getRole() {
-        return role;
-    }
-
-    public void setRole(ProjectRole role) {
-        this.role = role;
-    }
-
     // Helper method to create ProjectMember
     public static ProjectMember create(User user, Project project, ProjectRole role) {
         ProjectMember member = new ProjectMember();

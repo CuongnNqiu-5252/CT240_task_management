@@ -25,7 +25,7 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<ApiResponse<ProjectResponseDTO>> createProject(@Valid @RequestBody ProjectRequestDTO requestDTO) {
         ProjectResponseDTO response = projectService.createProject(requestDTO);
-        return new ResponseEntity<ApiResponse<ProjectResponseDTO>>(ApiResponse.<ProjectResponseDTO>builder().data(response).message("Project created successfully").build(), HttpStatus.CREATED);
+        return new ResponseEntity<>(ApiResponse.<ProjectResponseDTO>builder().data(response).message("Project created successfully").build(), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -47,11 +47,6 @@ public class ProjectController {
 
         return ResponseEntity.ok(ApiResponse.<List<ProjectResponseDTO>>builder().data(serviceResponse.getData()).pagination(serviceResponse.getPagination()).message("Projects retrieved successfully").build());
     }
-
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getProjectsByUserId(@PathVariable String userId) {
-//        List<ProjectResponseDTO>
-//    }
 
     @GetMapping("/status/{status}")
     public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getProjectsByStatus(@PathVariable ProjectStatus status) {
