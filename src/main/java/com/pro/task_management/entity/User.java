@@ -13,13 +13,13 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "nguoidung")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE nguoidung SET _destroy = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE users SET _destroy = true WHERE id = ?")
 @SQLRestriction("_destroy = false")
 public class User {
     @Id
