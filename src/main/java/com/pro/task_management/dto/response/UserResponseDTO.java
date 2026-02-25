@@ -18,6 +18,5 @@ public class UserResponseDTO {
     private String email;
     private String avatar;
     private Boolean deleted;
-    private String password;
     private Role role;
 }
