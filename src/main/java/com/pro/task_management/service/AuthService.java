@@ -8,4 +8,5 @@ import com.pro.task_management.dto.response.UserResponseDTO;
 public interface AuthService {
     UserResponseDTO createUser(UserRequestDTO requestDTO);
     AuthResponseDTO login(AuthRequestDTO request);
+    void logout();
 }

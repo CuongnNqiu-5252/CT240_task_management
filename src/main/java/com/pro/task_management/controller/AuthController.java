@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,5 +35,13 @@ public class AuthController {
                 .data(authResponse)
                 .message("Login successfully")
                 .build(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        authService.logout();
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .message("Logout successfully")
+                .build());
     }
 }
