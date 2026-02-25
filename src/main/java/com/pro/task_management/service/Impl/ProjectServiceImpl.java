@@ -49,7 +49,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(readOnly = true)
     public PageResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size) {
 
-
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Project> projectPage = projectRepository.findAll(pageable);
