@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponseDTO createUser(UserRequestDTO requestDTO) {
         if(userRepository.existsByUsername(requestDTO.getUsername()))
-            throw new AppException("User existed");
+            throw new AppException(HttpStatus.CONFLICT,"User existed");
 
         User user = userMapper.toEntity(requestDTO);
 
@@ -56,14 +57,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseDTO login(AuthRequestDTO request) {
         var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException("User not existed"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"User not existed"));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated)
-            throw new AppException("Unauthenticated");
+            throw new AppException(HttpStatus.UNAUTHORIZED,"Unauthenticated");
 
         String token = null;
         try {
