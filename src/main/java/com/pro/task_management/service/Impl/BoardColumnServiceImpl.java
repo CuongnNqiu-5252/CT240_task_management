@@ -4,12 +4,13 @@ import com.pro.task_management.dto.request.BoardColumnRequestDTO;
 import com.pro.task_management.dto.response.BoardColumnResponseDTO;
 import com.pro.task_management.entity.BoardColumn;
 import com.pro.task_management.entity.Project;
-import com.pro.task_management.exception.ResourceNotFoundException;
+import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.BoardColumnMapper;
 import com.pro.task_management.repository.BoardColumnRepository;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.service.BoardColumnService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     @Override
     public BoardColumnResponseDTO createBoardColumn(BoardColumnRequestDTO requestDTO) {
         Project project = projectRepository.findById(requestDTO.getProjectId())
-                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", requestDTO.getProjectId()));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
         BoardColumn boardColumn = BoardColumn.builder()
                 .name(requestDTO.getName())
@@ -42,7 +43,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     @Transactional(readOnly = true)
     public BoardColumnResponseDTO getBoardColumnById(String id) {
         BoardColumn boardColumn = boardColumnRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("BoardColumn", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         return boardColumnMapper.toDTO(boardColumn);
     }
 
@@ -56,7 +57,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     @Override
     public BoardColumnResponseDTO updateBoardColumn(String id, BoardColumnRequestDTO requestDTO) {
         BoardColumn boardColumn = boardColumnRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("BoardColumn", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         boardColumn.setName(requestDTO.getName());
         BoardColumn updated = boardColumnRepository.save(boardColumn);
         return boardColumnMapper.toDTO(updated);
@@ -65,7 +66,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     @Override
     public void deleteBoardColumn(String id) {
         BoardColumn boardColumn = boardColumnRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("BoardColumn", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         boardColumnRepository.delete(boardColumn);
     }
 }

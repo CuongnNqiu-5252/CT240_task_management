@@ -6,7 +6,7 @@ import com.pro.task_management.dto.response.Pagination;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
 import com.pro.task_management.entity.Project;
 import com.pro.task_management.enums.ProjectStatus;
-import com.pro.task_management.exception.ResourceNotFoundException;
+import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.ProjectMapper;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.service.ProjectService;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +42,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(readOnly = true)
     public ProjectResponseDTO getProjectById(String id) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         return projectMapper.toDTO(project);
     }
 
@@ -80,7 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponseDTO updateProject(String id, ProjectRequestDTO requestDTO) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         projectMapper.updateEntityFromDTO(requestDTO, project);
         Project updatedProject = projectRepository.save(project);
         return projectMapper.toDTO(updatedProject);
@@ -89,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void deleteProject(String id) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         projectRepository.delete(project);
     }
 }

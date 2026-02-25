@@ -4,13 +4,14 @@ import com.pro.task_management.dto.response.NotificationResponseDTO;
 import com.pro.task_management.entity.Notification;
 import com.pro.task_management.entity.Task;
 import com.pro.task_management.entity.User;
-import com.pro.task_management.exception.ResourceNotFoundException;
+import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.NotificationMapper;
 import com.pro.task_management.repository.NotificationRepository;
 import com.pro.task_management.repository.TaskRepository;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationResponseDTO createNotification(NotificationRequestDTO requestDTO) {
         User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", requestDTO.getUserId()));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
         Notification notification = Notification.builder()
                 .content(requestDTO.getContent())
@@ -38,7 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (requestDTO.getTaskId() != null) {
             Task task = taskRepository.findById(requestDTO.getTaskId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Task", "id", requestDTO.getTaskId()));
+                    .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
             notification.setTask(task);
         }
 
@@ -50,7 +51,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional(readOnly = true)
     public NotificationResponseDTO getNotificationById(String id) {
         Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         return notificationMapper.toDTO(notification);
     }
 
@@ -64,7 +65,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void deleteNotification(String id) {
         Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         notificationRepository.delete(notification);
     }
 }

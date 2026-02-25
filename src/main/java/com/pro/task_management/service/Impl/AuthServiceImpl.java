@@ -10,6 +10,7 @@ import com.pro.task_management.service.AuthService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponseDTO createUser(UserRequestDTO requestDTO) {
         if(userRepository.existsByUsername(requestDTO.getUsername()))
-            throw new AppException("User existed");
+            throw new AppException(HttpStatus.NOT_FOUND,"User existed");
 
         User user = userMapper.toEntity(requestDTO);
 

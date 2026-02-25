@@ -8,7 +8,6 @@ import com.pro.task_management.dto.response.UserResponseDTO;
 import com.pro.task_management.entity.User;
 import com.pro.task_management.enums.Role;
 import com.pro.task_management.exception.AppException;
-import com.pro.task_management.exception.ResourceNotFoundException;
 import com.pro.task_management.mapper.UserMapper;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.UserService;
@@ -16,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO createUser(UserRequestDTO requestDTO) {
         if(userRepository.existsByUsername(requestDTO.getUsername()))
-            throw new AppException("User existed");
+            throw new AppException(HttpStatus.CONFLICT,"User existed");
         User user = userMapper.toEntity(requestDTO);
         user.setDeleted(false);
         user.setRole(Role.USER);
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserResponseDTO getUserById(String id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         return userMapper.toDTO(user);
     }
 
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
         Page<User> users = userRepository.findAll(pageable);
         List<UserResponseDTO> userResponseDTOS = users.getContent()
-                .stream().map(user -> userMapper.toDTO(user))
+                .stream().map(userMapper::toDTO)
                 .toList();
         Pagination pagination = Pagination.builder()
                 .size(size)
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO updateUser(String id, UserUpdateRequestDTO requestDTO) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         userMapper.toUpdateDTO(requestDTO, user);
         User updatedUser = userRepository.save(user);
         return userMapper.toDTO(updatedUser);
@@ -92,14 +92,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         userRepository.delete(user);
     }
 
     @Override
     public void softDeleteUser(String id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         user.setDeleted(true);
         userRepository.save(user);
     }

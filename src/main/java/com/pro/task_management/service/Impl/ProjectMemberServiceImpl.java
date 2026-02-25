@@ -8,7 +8,7 @@ import com.pro.task_management.entity.Project;
 import com.pro.task_management.entity.ProjectMember;
 import com.pro.task_management.entity.ProjectMemberId;
 import com.pro.task_management.entity.User;
-import com.pro.task_management.exception.ResourceNotFoundException;
+import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.ProjectMemberMapper;
 import com.pro.task_management.repository.ProjectMemberRepository;
 import com.pro.task_management.repository.ProjectRepository;
@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +38,10 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public ProjectMemberResponseDTO addProjectMember(ProjectMemberRequestDTO requestDTO) {
         User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", requestDTO.getUserId()));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not Found"));
 
         Project project = projectRepository.findById(requestDTO.getProjectId())
-                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", requestDTO.getProjectId()));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
         ProjectMember projectMember = ProjectMember.create(user, project, requestDTO.getRole());
         ProjectMember savedMember = projectMemberRepository.save(projectMember);
@@ -95,8 +96,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public void removeProjectMember(String userId, String projectId) {
         ProjectMemberId id = new ProjectMemberId(userId, projectId);
         ProjectMember member = projectMemberRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "ProjectMember not found with userId: " + userId + " and projectId: " + projectId));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         projectMemberRepository.delete(member);
     }
 }
