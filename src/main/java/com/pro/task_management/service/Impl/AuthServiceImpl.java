@@ -108,4 +108,9 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void logout() {
+        // Clear cookies
+    }
 }
