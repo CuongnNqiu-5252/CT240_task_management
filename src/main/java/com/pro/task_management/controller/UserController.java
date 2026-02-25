@@ -2,6 +2,9 @@ package com.pro.task_management.controller;
 
 import com.pro.task_management.dto.request.UserRequestDTO;
 import com.pro.task_management.dto.request.UserUpdateRequestDTO;
+import com.pro.task_management.dto.response.ApiResponse;
+import com.pro.task_management.dto.response.PageResponse;
+import com.pro.task_management.dto.response.ProjectResponseDTO;
 import com.pro.task_management.dto.response.UserResponseDTO;
 import com.pro.task_management.service.CloudinaryService;
 import com.pro.task_management.service.UserService;
@@ -37,9 +40,15 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<UserResponseDTO> response = userService.getAllUsers();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PageResponse<List<UserResponseDTO>> serviceResponse = userService.getAllUsers(page, size);
+        return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
+                .message("Get successes")
+                .data(serviceResponse.getData())
+                .build());
     }
 
     @GetMapping("/active")
@@ -49,7 +58,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponseDTO> updateUser(
+    public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(
             @PathVariable String id,
             @ModelAttribute UserUpdateRequestDTO requestDTO,
             @RequestParam(value = "image", required = false) MultipartFile file) {
@@ -65,7 +74,9 @@ public class UserController {
         requestDTO.setAvatar(imageUrl);
 
         UserResponseDTO response = userService.updateUser(id, requestDTO);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.<UserResponseDTO>builder()
+                .data(response)
+                .build());
     }
 
     @DeleteMapping("/{id}")

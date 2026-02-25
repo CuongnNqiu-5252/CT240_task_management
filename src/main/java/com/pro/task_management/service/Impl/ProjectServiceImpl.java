@@ -1,7 +1,6 @@
 package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
-import com.pro.task_management.dto.response.ApiResponse;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.Pagination;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
@@ -60,6 +59,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .toList();
 
         Pagination pagination = Pagination.builder()
+                .page(page)
                 .size(size)
                 .totalElements(projectPage.getTotalElements())
                 .totalPages(projectPage.getTotalPages())

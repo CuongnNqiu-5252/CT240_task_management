@@ -25,7 +25,7 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<ApiResponse<ProjectResponseDTO>> createProject(@Valid @RequestBody ProjectRequestDTO requestDTO) {
         ProjectResponseDTO response = projectService.createProject(requestDTO);
-        return new ResponseEntity<ApiResponse<ProjectResponseDTO>>(ApiResponse.<ProjectResponseDTO>builder().data(response).message("Project created successfully").build(), HttpStatus.CREATED);
+        return new ResponseEntity<>(ApiResponse.<ProjectResponseDTO>builder().data(response).message("Project created successfully").build(), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
