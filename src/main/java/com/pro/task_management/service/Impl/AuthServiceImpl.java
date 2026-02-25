@@ -3,6 +3,7 @@ package com.pro.task_management.service.Impl;
 import com.pro.task_management.dto.request.UserRequestDTO;
 import com.pro.task_management.dto.response.UserResponseDTO;
 import com.pro.task_management.entity.User;
+import com.pro.task_management.enums.Role;
 import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.UserMapper;
 import com.pro.task_management.repository.UserRepository;
@@ -29,7 +30,8 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException(HttpStatus.NOT_FOUND,"User existed");
 
         User user = userMapper.toEntity(requestDTO);
-
+        user.setDeleted(false);
+        user.setRole(Role.USER);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
 
