@@ -1,7 +1,9 @@
 package com.pro.task_management.controller;
 
+import com.pro.task_management.dto.request.AuthRequestDTO;
 import com.pro.task_management.dto.request.UserRequestDTO;
 import com.pro.task_management.dto.response.ApiResponse;
+import com.pro.task_management.dto.response.AuthResponseDTO;
 import com.pro.task_management.dto.response.UserResponseDTO;
 import com.pro.task_management.service.AuthService;
 import jakarta.validation.Valid;
@@ -29,4 +31,12 @@ public class AuthController {
         return new ResponseEntity<>(ApiResponse.<UserResponseDTO>builder().data(userResponse).message("User created successfully").build(), HttpStatus.CREATED);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthResponseDTO>> login(@Valid @RequestBody AuthRequestDTO request) {
+        AuthResponseDTO authResponse = authService.login(request);
+        return new ResponseEntity<>(ApiResponse.<AuthResponseDTO>builder()
+                .data(authResponse)
+                .message("Login successfully")
+                .build(), HttpStatus.OK);
+    }
 }

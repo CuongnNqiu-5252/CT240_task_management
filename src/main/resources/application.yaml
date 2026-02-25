@@ -30,4 +30,4 @@ server:
   servlet:
     context-path: /api/v1
 jwt:
-  signerKey: "43b5decd-40ea-40d4-b81c-c2aef8e6ccae"
+  signer-key: "f08959263a28209b45347755c99d17a4bf622310ffa3e22dca5b0876b1d2f725"

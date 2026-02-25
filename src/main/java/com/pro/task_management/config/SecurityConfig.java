@@ -20,7 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Value("${jwt.signerKey}")
+    @Value("${jwt.signer-key}")
     private String signerKey;
     private final String[] PUBLIC_ENDPOINTS = {"/users", "/auth/token", "/auth/introspect"};
 
@@ -44,9 +44,9 @@ public class SecurityConfig {
     }
     @Bean
     JwtDecoder jwtDecoder(){
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS256");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
         return NimbusJwtDecoder.withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS256)
+                .macAlgorithm(MacAlgorithm.HS512)
                 .build();
     }
 
