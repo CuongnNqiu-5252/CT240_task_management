@@ -113,7 +113,8 @@ Controller Layer → Service Layer → Repository Layer → Database
 ```
 src/main/java/com/project/management/
 ├── ProjectManagementApplication.java
-├── config/                    # Configuration classes
+├── config/
+│   ├── ApplicationInit.java                    # Configuration classes
 ├── controller/                # REST Controllers
 │   ├── UserController.java
 │   ├── ProjectController.java
