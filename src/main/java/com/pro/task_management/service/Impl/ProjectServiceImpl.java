@@ -11,11 +11,14 @@ import com.pro.task_management.enums.ProjectRole;
 import com.pro.task_management.enums.ProjectStatus;
 import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.ProjectMapper;
+import com.pro.task_management.mapper.ProjectMemberMapper;
 import com.pro.task_management.repository.ProjectMemberRepository;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,24 +36,35 @@ import java.util.Optional;
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
 
+    private static final Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final ProjectMemberRepository projectMemberRepository;
     private final UserRepository userRepository;
+    private final ProjectMemberMapper projectMemberMapper;
 
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO requestDTO) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findById(userId)
+        log.info(userId);
+        User user = userRepository.findByUsername(userId)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Not found"));
         Project project = projectMapper.toEntity(requestDTO);
         if (project.getStatus() == null) {
             project.setStatus(ProjectStatus.ACTIVE);
         }
-        ProjectMember projectMember = ProjectMember.create(user,project, ProjectRole.MANAGER);
-        projectMemberRepository.save(projectMember);
         Project savedProject = projectRepository.save(project);
-        return projectMapper.toDTO(savedProject);
+
+        ProjectMember projectMember =
+                ProjectMember.create(user, savedProject, ProjectRole.MANAGER);
+
+        projectMemberRepository.save(projectMember);
+        return ProjectResponseDTO.builder()
+                .name(savedProject.getName())
+                .description(savedProject.getDescription())
+                .status(savedProject.getStatus())
+                .projectMemberResponseDTO(projectMemberMapper.toDTO(projectMember))
+                .build();
     }
 
     @Override

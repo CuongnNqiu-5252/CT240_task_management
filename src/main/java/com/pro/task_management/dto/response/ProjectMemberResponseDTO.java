@@ -12,9 +12,7 @@ import java.util.UUID;
 @Builder
 public class ProjectMemberResponseDTO {
 
-    private String userId;
-    private String projectId;
-    private String username;
-    private String projectName;
+    private UserResponseDTO user;
+    private ProjectResponseDTO project;
     private ProjectRole role;
 }
