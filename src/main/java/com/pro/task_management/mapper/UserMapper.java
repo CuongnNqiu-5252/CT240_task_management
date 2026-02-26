@@ -1,6 +1,7 @@
 package com.pro.task_management.mapper;
 
 import com.pro.task_management.dto.request.UserRequestDTO;
+import com.pro.task_management.dto.request.UserUpdateRequestDTO;
 import com.pro.task_management.dto.response.UserResponseDTO;
 import com.pro.task_management.entity.User;
 import org.mapstruct.Mapper;
@@ -17,8 +18,6 @@ public interface UserMapper {
 
     List<UserResponseDTO> toDTOList(List<User> users);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "createdTasks", ignore = true)
     @Mapping(target = "assignedTasks", ignore = true)
     @Mapping(target = "comments", ignore = true)
@@ -34,4 +33,13 @@ public interface UserMapper {
     @Mapping(target = "notifications", ignore = true)
     @Mapping(target = "projectMemberships", ignore = true)
     void updateEntityFromDTO(UserRequestDTO dto, @MappingTarget User user);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "createdTasks", ignore = true)
+    @Mapping(target = "assignedTasks", ignore = true)
+    @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "notifications", ignore = true)
+    @Mapping(target = "projectMemberships", ignore = true)
+    void toUpdateDTO(UserUpdateRequestDTO dto, @MappingTarget User user);
 }

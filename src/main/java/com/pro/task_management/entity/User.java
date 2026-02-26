@@ -1,22 +1,27 @@
 package com.pro.task_management.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pro.task_management.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "nguoidung")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE users SET _destroy = true WHERE id = ?")
+@SQLRestriction("_destroy = false")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
@@ -37,9 +42,11 @@ public class User {
     @Column(name = "_destroy", nullable = false)
     private Boolean deleted = false;
 
-    @Column(name = "isAdmin", nullable = false)
-    private Boolean isAdmin = false;
     // Relationships
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default

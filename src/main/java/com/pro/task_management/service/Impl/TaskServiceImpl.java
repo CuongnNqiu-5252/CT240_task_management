@@ -1,4 +1,4 @@
-package com.pro.task_management.service;
+package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.TaskRequestDTO;
 import com.pro.task_management.dto.response.TaskResponseDTO;
@@ -6,13 +6,14 @@ import com.pro.task_management.entity.Project;
 import com.pro.task_management.entity.Task;
 import com.pro.task_management.entity.User;
 import com.pro.task_management.enums.TaskStatus;
-import com.pro.task_management.exception.ResourceNotFoundException;
+import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.TaskMapper;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.repository.TaskRepository;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +32,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDTO createTask(TaskRequestDTO requestDTO) {
         Project project = projectRepository.findById(requestDTO.getProjectId())
-                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", requestDTO.getProjectId()));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
         User creator = userRepository.findById(requestDTO.getCreatorId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", requestDTO.getCreatorId()));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
         Task task = Task.builder()
                 .title(requestDTO.getTitle())
@@ -47,7 +48,7 @@ public class TaskServiceImpl implements TaskService {
 
         if (requestDTO.getAssigneeId() != null) {
             User assignee = userRepository.findById(requestDTO.getAssigneeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", requestDTO.getAssigneeId()));
+                    .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
             task.setAssignee(assignee);
         }
 
@@ -59,7 +60,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public TaskResponseDTO getTaskById(String id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         return taskMapper.toDTO(task);
     }
 
@@ -94,7 +95,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDTO updateTask(String id, TaskRequestDTO requestDTO) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
         task.setTitle(requestDTO.getTitle());
         task.setDescription(requestDTO.getDescription());
@@ -106,7 +107,7 @@ public class TaskServiceImpl implements TaskService {
 
         if (requestDTO.getAssigneeId() != null) {
             User assignee = userRepository.findById(requestDTO.getAssigneeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", requestDTO.getAssigneeId()));
+                    .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
             task.setAssignee(assignee);
         }
 
@@ -117,7 +118,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void deleteTask(String id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         taskRepository.delete(task);
     }
 }

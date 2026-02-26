@@ -13,7 +13,7 @@ A comprehensive Spring Boot REST API for managing projects, tasks, users, and te
 
 ## 🛠 Technology Stack
 
-- **Java**: 17
+- **Java**: 25
 - **Spring Boot**: 3.2.1
 - **Spring Data JPA**: Hibernate ORM
 - **PostgreSQL**: Database
@@ -111,89 +111,128 @@ Controller Layer → Service Layer → Repository Layer → Database
 ## 📁 Project Structure
 
 ```
-src/main/java/com/project/management/
-├── ProjectManagementApplication.java
-├── config/                    # Configuration classes
-├── controller/                # REST Controllers
-│   ├── UserController.java
-│   ├── ProjectController.java
-│   ├── ProjectMemberController.java
-│   ├── TaskController.java
-│   ├── BoardColumnController.java
-│   ├── CommentController.java
-│   └── NotificationController.java
-├── service/                   # Service interfaces
-│   ├── UserService.java
-│   ├── ProjectService.java
-│   ├── ProjectMemberService.java
-│   ├── TaskService.java
-│   ├── BoardColumnService.java
-│   ├── CommentService.java
-│   ├── NotificationService.java
-│   └── impl/                 # Service implementations
-│       ├── UserServiceImpl.java
-│       ├── ProjectServiceImpl.java
-│       ├── ProjectMemberServiceImpl.java
-│       ├── TaskServiceImpl.java
-│       ├── BoardColumnServiceImpl.java
-│       ├── CommentServiceImpl.java
-│       └── NotificationServiceImpl.java
-├── repository/               # JPA Repositories
-│   ├── UserRepository.java
-│   ├── ProjectRepository.java
-│   ├── ProjectMemberRepository.java
-│   ├── TaskRepository.java
-│   ├── BoardColumnRepository.java
-│   ├── CommentRepository.java
-│   └── NotificationRepository.java
-├── entity/                   # JPA Entities
-│   ├── User.java
-│   ├── Project.java
-│   ├── ProjectMember.java
-│   ├── ProjectMemberId.java
-│   ├── Task.java
-│   ├── BoardColumn.java
-│   ├── Comment.java
-│   └── Notification.java
-├── dto/                      # Data Transfer Objects
-│   ├── request/
-│   │   ├── UserRequestDTO.java
-│   │   ├── ProjectRequestDTO.java
-│   │   ├── ProjectMemberRequestDTO.java
-│   │   ├── TaskRequestDTO.java
-│   │   ├── BoardColumnRequestDTO.java
-│   │   ├── CommentRequestDTO.java
-│   │   └── NotificationRequestDTO.java
-│   └── response/
-│       ├── UserResponseDTO.java
-│       ├── ProjectResponseDTO.java
-│       ├── ProjectMemberResponseDTO.java
-│       ├── TaskResponseDTO.java
-│       ├── BoardColumnResponseDTO.java
-│       ├── CommentResponseDTO.java
-│       └── NotificationResponseDTO.java
-├── mapper/                   # MapStruct Mappers
-│   ├── UserMapper.java
-│   ├── ProjectMapper.java
-│   ├── ProjectMemberMapper.java
-│   ├── TaskMapper.java
-│   ├── BoardColumnMapper.java
-│   ├── CommentMapper.java
-│   └── NotificationMapper.java
-├── enums/                    # Enumerations
-│   ├── ProjectStatus.java
-│   ├── TaskStatus.java
-│   └── ProjectRole.java
-└── exception/                # Exception handling
-    ├── ResourceNotFoundException.java
-    ├── ErrorResponse.java
-    └── GlobalExceptionHandler.java
+CT240_task_management
+├─ .mvn
+│  └─ wrapper
+│     └─ maven-wrapper.properties
+├─ docker-compose.yml
+├─ Dockerfile
+├─ mvnw
+├─ mvnw.cmd
+├─ pom.xml
+└─ src
+   ├─ main
+   │  ├─ java
+   │  │  └─ com
+   │  │     └─ pro
+   │  │        └─ task_management
+   │  │           ├─ config
+   │  │           │  ├─ ApplicationInitConfig.java
+   │  │           │  ├─ CloudinaryConfig.java
+   │  │           │  ├─ JwtAuthenticationEntryPoint.java
+   │  │           │  └─ SecurityConfig.java
+   │  │           ├─ controller
+   │  │           │  ├─ AuthController.java
+   │  │           │  ├─ BoardColumnController.java
+   │  │           │  ├─ CommentController.java
+   │  │           │  ├─ NotificationController.java
+   │  │           │  ├─ ProjectController.java
+   │  │           │  ├─ ProjectMemberController.java
+   │  │           │  ├─ TaskController.java
+   │  │           │  └─ UserController.java
+   │  │           ├─ dto
+   │  │           │  ├─ request
+   │  │           │  │  ├─ AuthRequestDTO.java
+   │  │           │  │  ├─ BoardColumnRequestDTO.java
+   │  │           │  │  ├─ CommentRequestDTO.java
+   │  │           │  │  ├─ NotificationRequestDTO.java
+   │  │           │  │  ├─ ProjectMemberRequestDTO.java
+   │  │           │  │  ├─ ProjectRequestDTO.java
+   │  │           │  │  ├─ TaskRequestDTO.java
+   │  │           │  │  ├─ UserRequestDTO.java
+   │  │           │  │  └─ UserUpdateRequestDTO.java
+   │  │           │  └─ response
+   │  │           │     ├─ ApiResponse.java
+   │  │           │     ├─ AuthResponseDTO.java
+   │  │           │     ├─ BoardColumnResponseDTO.java
+   │  │           │     ├─ CommentResponseDTO.java
+   │  │           │     ├─ NotificationResponseDTO.java
+   │  │           │     ├─ PageResponse.java
+   │  │           │     ├─ Pagination.java
+   │  │           │     ├─ ProjectMemberResponseDTO.java
+   │  │           │     ├─ ProjectResponseDTO.java
+   │  │           │     ├─ TaskResponseDTO.java
+   │  │           │     └─ UserResponseDTO.java
+   │  │           ├─ entity
+   │  │           │  ├─ BoardColumn.java
+   │  │           │  ├─ Comment.java
+   │  │           │  ├─ Notification.java
+   │  │           │  ├─ Project.java
+   │  │           │  ├─ ProjectMember.java
+   │  │           │  ├─ ProjectMemberId.java
+   │  │           │  ├─ Task.java
+   │  │           │  └─ User.java
+   │  │           ├─ enums
+   │  │           │  ├─ ProjectRole.java
+   │  │           │  ├─ ProjectStatus.java
+   │  │           │  ├─ Role.java
+   │  │           │  └─ TaskStatus.java
+   │  │           ├─ exception
+   │  │           │  ├─ AppException.java
+   │  │           │  ├─ ErrorResponse.java
+   │  │           │  └─ GlobalExceptionHandler.java
+   │  │           ├─ mapper
+   │  │           │  ├─ BoardColumnMapper.java
+   │  │           │  ├─ CommentMapper.java
+   │  │           │  ├─ NotificationMapper.java
+   │  │           │  ├─ ProjectMapper.java
+   │  │           │  ├─ ProjectMemberMapper.java
+   │  │           │  ├─ TaskMapper.java
+   │  │           │  └─ UserMapper.java
+   │  │           ├─ repository
+   │  │           │  ├─ BoardColumnRepository.java
+   │  │           │  ├─ CommentRepository.java
+   │  │           │  ├─ NotificationRepository.java
+   │  │           │  ├─ ProjectMemberRepository.java
+   │  │           │  ├─ ProjectRepository.java
+   │  │           │  ├─ TaskRepository.java
+   │  │           │  └─ UserRepository.java
+   │  │           ├─ service
+   │  │           │  ├─ AuthService.java
+   │  │           │  ├─ BoardColumnService.java
+   │  │           │  ├─ CloudinaryService.java
+   │  │           │  ├─ CommentService.java
+   │  │           │  ├─ Impl
+   │  │           │  │  ├─ AuthServiceImpl.java
+   │  │           │  │  ├─ BoardColumnServiceImpl.java
+   │  │           │  │  ├─ CloudinaryServiceImpl.java
+   │  │           │  │  ├─ CommentServiceImpl.java
+   │  │           │  │  ├─ NotificationServiceImpl.java
+   │  │           │  │  ├─ ProjectMemberServiceImpl.java
+   │  │           │  │  ├─ ProjectServiceImpl.java
+   │  │           │  │  ├─ TaskServiceImpl.java
+   │  │           │  │  └─ UserServiceImpl.java
+   │  │           │  ├─ NotificationService.java
+   │  │           │  ├─ ProjectMemberService.java
+   │  │           │  ├─ ProjectService.java
+   │  │           │  ├─ TaskService.java
+   │  │           │  └─ UserService.java
+   │  │           └─ TaskManagementApplication.java
+   │  └─ resources
+   │     └─ application.yaml
+   ├─ Readme.md
+   └─ test
+      └─ java
+         └─ com
+            └─ pro
+               └─ task_management
+                  └─ TaskManagementApplicationTests.java
 ```
 
 ## 🚀 Setup Instructions
 
 ### Prerequisites
-- Java 17 or higher
+- Java 25
 - PostgreSQL 12 or higher
 - Maven 3.6 or higher
 

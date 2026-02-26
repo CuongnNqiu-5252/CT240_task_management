@@ -1,17 +1,18 @@
-package com.pro.task_management.service;
+package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.CommentRequestDTO;
 import com.pro.task_management.dto.response.CommentResponseDTO;
 import com.pro.task_management.entity.Comment;
 import com.pro.task_management.entity.Task;
 import com.pro.task_management.entity.User;
-import com.pro.task_management.exception.ResourceNotFoundException;
+import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.CommentMapper;
 import com.pro.task_management.repository.CommentRepository;
 import com.pro.task_management.repository.TaskRepository;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +31,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentResponseDTO createComment(CommentRequestDTO requestDTO) {
         Task task = taskRepository.findById(requestDTO.getTaskId())
-                .orElseThrow(() -> new ResourceNotFoundException("Task", "id", requestDTO.getTaskId()));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
         User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", requestDTO.getUserId()));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
         Comment comment = Comment.builder()
                 .content(requestDTO.getContent())
@@ -49,7 +50,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional(readOnly = true)
     public CommentResponseDTO getCommentById(String id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         return commentMapper.toDTO(comment);
     }
 
@@ -63,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentResponseDTO updateComment(String id, CommentRequestDTO requestDTO) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         comment.setContent(requestDTO.getContent());
         Comment updated = commentRepository.save(comment);
         return commentMapper.toDTO(updated);
@@ -72,7 +73,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteComment(String id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         commentRepository.delete(comment);
     }
 }

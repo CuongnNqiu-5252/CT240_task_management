@@ -1,9 +1,12 @@
 package com.pro.task_management.dto.request;
 
+import com.pro.task_management.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,7 +27,8 @@ public class UserRequestDTO {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    private Boolean isAdmin;
-
     private String avatar;
+
+
+    Role role;
 }
