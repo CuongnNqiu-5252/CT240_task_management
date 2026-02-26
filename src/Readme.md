@@ -113,10 +113,14 @@ Controller Layer → Service Layer → Repository Layer → Database
 ```
 src/main/java/com/project/management/
 ├── ProjectManagementApplication.java
-├── config/
-│   ├── ApplicationInit.java                    # Configuration classes
+├── config/                  # Configuration classes
+│   ├── ApplicationInitConfig.java
+│   ├── ClodinaryConfig.java
+│   ├── JwtAuthenticationEntryPoint.java
+│   ├── SecurityConfig.java                    
 ├── controller/                # REST Controllers
 │   ├── UserController.java
+│   ├── AuthController.java
 │   ├── ProjectController.java
 │   ├── ProjectMemberController.java
 │   ├── TaskController.java
@@ -125,6 +129,7 @@ src/main/java/com/project/management/
 │   └── NotificationController.java
 ├── service/                   # Service interfaces
 │   ├── UserService.java
+│   ├── AuthService.java
 │   ├── ProjectService.java
 │   ├── ProjectMemberService.java
 │   ├── TaskService.java
@@ -133,6 +138,7 @@ src/main/java/com/project/management/
 │   ├── NotificationService.java
 │   └── impl/                 # Service implementations
 │       ├── UserServiceImpl.java
+│       ├── AuthImpl.java
 │       ├── ProjectServiceImpl.java
 │       ├── ProjectMemberServiceImpl.java
 │       ├── TaskServiceImpl.java
@@ -159,6 +165,7 @@ src/main/java/com/project/management/
 ├── dto/                      # Data Transfer Objects
 │   ├── request/
 │   │   ├── UserRequestDTO.java
+│   │   ├── AuthRequestDTO.java
 │   │   ├── ProjectRequestDTO.java
 │   │   ├── ProjectMemberRequestDTO.java
 │   │   ├── TaskRequestDTO.java
