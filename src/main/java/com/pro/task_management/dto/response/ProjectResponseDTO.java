@@ -16,4 +16,5 @@ public class ProjectResponseDTO {
     private String name;
     private String description;
     private ProjectStatus status;
+    private ProjectMemberResponseDTO projectMemberResponseDTO;
 }
