@@ -4,6 +4,7 @@ import com.pro.task_management.dto.request.ProjectRequestDTO;
 import com.pro.task_management.dto.response.ApiResponse;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
+import com.pro.task_management.dto.response.ProjectResponseWithMembersDTO;
 import com.pro.task_management.enums.ProjectStatus;
 import com.pro.task_management.service.ProjectService;
 import jakarta.validation.Valid;
@@ -41,14 +42,14 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getAllProjects(
+    public ResponseEntity<ApiResponse<List<ProjectResponseWithMembersDTO>>> getAllProjects(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        PageResponse<List<ProjectResponseDTO>> serviceResponse = projectService.getAllProjects(page, size);
+        PageResponse<List<ProjectResponseWithMembersDTO>> serviceResponse = projectService.getAllProjects(page, size);
 
 
-        return ResponseEntity.ok(ApiResponse.<List<ProjectResponseDTO>>builder()
+        return ResponseEntity.ok(ApiResponse.<List<ProjectResponseWithMembersDTO>>builder()
                 .data(serviceResponse.getData())
                 .pagination(serviceResponse.getPagination())
                 .message("Projects retrieved successfully")
