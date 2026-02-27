@@ -4,6 +4,7 @@ import com.pro.task_management.dto.request.ProjectRequestDTO;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.Pagination;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
+import com.pro.task_management.dto.response.ProjectResponseWithMembersDTO;
 import com.pro.task_management.entity.Project;
 import com.pro.task_management.entity.ProjectMember;
 import com.pro.task_management.entity.User;
@@ -77,14 +78,24 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size) {
+    public PageResponse<List<ProjectResponseWithMembersDTO>> getAllProjects(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Project> projectPage = projectRepository.findAll(pageable);
+        Page<Project> projectPage = projectRepository.findAllWithMembers(pageable);
 
-        List<ProjectResponseDTO> projectsDTO = projectPage.getContent().stream()
-                .map(projectMapper::toDTO)
+        List<ProjectResponseWithMembersDTO> projectsDTO = projectPage.getContent().stream()
+                .map(project -> {
+                    return ProjectResponseWithMembersDTO.builder()
+                            .owner(project.getProjectMembers().stream().filter(member -> {
+                                return member.getRole().equals(ProjectRole.MANAGER);
+                            }).toList().getFirst().getUser().getUsername())
+                            .name(project.getName())
+                            .description(project.getDescription())
+                            .status(project.getStatus())
+
+                            .build();
+                })
                 .toList();
 
         Pagination pagination = Pagination.builder()
@@ -94,7 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .totalPages(projectPage.getTotalPages())
                 .build();
 
-        return PageResponse.<List<ProjectResponseDTO>>builder()
+        return PageResponse.<List<ProjectResponseWithMembersDTO>>builder()
                 .data(projectsDTO)
                 .pagination(pagination)
                 .build();
