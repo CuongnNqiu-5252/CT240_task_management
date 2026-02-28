@@ -37,11 +37,11 @@ public class SecurityConfig {
     @Order(1) // Ưu tiên chạy FilterChain này trước
     public SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/auth/**") // Chỉ áp dụng chain này cho các path này
+                .securityMatcher("/auth/**", "/error") // Chỉ áp dụng chain này cho các path này
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated() // Các phương thức khác của /users vẫn cần auth (nếu muốn)
+                        .requestMatchers("/auth/**", "/error").permitAll()
+                        .anyRequest().authenticated()
                 );
         // Quan trọng: Không cấu hình oauth2ResourceServer ở đây
         return http.build();

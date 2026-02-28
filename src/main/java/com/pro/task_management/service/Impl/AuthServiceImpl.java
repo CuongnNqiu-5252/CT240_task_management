@@ -45,6 +45,9 @@ public class AuthServiceImpl implements AuthService {
     public UserResponseDTO createUser(UserRequestDTO requestDTO) {
         if(userRepository.existsByUsername(requestDTO.getUsername()))
             throw new AppException(HttpStatus.CONFLICT,"User existed");
+        // Thêm check email
+        if(userRepository.existsByEmail(requestDTO.getEmail()))
+            throw new AppException(HttpStatus.CONFLICT,"Email already existed");
 
         User user = userMapper.toEntity(requestDTO);
         user.setDeleted(false);
