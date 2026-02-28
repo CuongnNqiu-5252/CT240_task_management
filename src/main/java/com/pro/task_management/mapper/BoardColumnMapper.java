@@ -7,9 +7,10 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { TaskMapper.class })
 public interface BoardColumnMapper {
 
+    @Mapping(source = "tasks", target = "listTaskResponseDTO")
     BoardColumnResponseDTO toDTO(BoardColumn boardColumn);
 
     List<BoardColumnResponseDTO> toDTOList(List<BoardColumn> boardColumns);
