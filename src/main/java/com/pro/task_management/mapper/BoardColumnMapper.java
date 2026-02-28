@@ -10,8 +10,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface BoardColumnMapper {
 
-    @Mapping(source = "project.id", target = "projectId")
-    @Mapping(source = "project.name", target = "projectName")
     BoardColumnResponseDTO toDTO(BoardColumn boardColumn);
 
     List<BoardColumnResponseDTO> toDTOList(List<BoardColumn> boardColumns);

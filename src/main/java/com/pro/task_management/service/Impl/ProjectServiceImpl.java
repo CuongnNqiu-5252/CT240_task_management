@@ -11,6 +11,7 @@ import com.pro.task_management.entity.User;
 import com.pro.task_management.enums.ProjectRole;
 import com.pro.task_management.enums.ProjectStatus;
 import com.pro.task_management.exception.AppException;
+import com.pro.task_management.mapper.BoardColumnMapper;
 import com.pro.task_management.mapper.ProjectMapper;
 import com.pro.task_management.mapper.ProjectMemberMapper;
 import com.pro.task_management.repository.ProjectMemberRepository;
@@ -36,6 +37,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
+
+    private final BoardColumnMapper boardColumnMapper;
 
     private static final Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
     private final ProjectRepository projectRepository;
@@ -73,8 +76,19 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(readOnly = true)
     public ProjectResponseDTO getProjectById(String id) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
-        return projectMapper.toDTO(project);
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Project not found"));
+
+
+        return ProjectResponseDTO.builder()
+                .id(project.getId())
+                .status(project.getStatus())
+                .name(project.getName())
+                .owner(project.getProjectMembers().stream().filter(member -> {
+                    return member.getRole().equals(ProjectRole.MANAGER);
+                }).toList().getFirst().getUser().getUsername())
+                .description(project.getDescription())
+                .listBoardColumnResponseDTO(boardColumnMapper.toDTOList(project.getBoardColumns()))
+                .build();
     }
 
     @Override
