@@ -30,6 +30,6 @@ public class TaskRequestDTO {
 
     private String assigneeId;
 
-    @NotNull(message = "Creator ID is required")
-    private String creatorId;
+//    @NotNull(message = "Creator ID is required")
+//    private String creatorId;
 }

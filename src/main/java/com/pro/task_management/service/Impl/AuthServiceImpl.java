@@ -94,6 +94,7 @@ public class AuthServiceImpl implements AuthService {
                         Instant.now().plus(30, ChronoUnit.MINUTES).toEpochMilli()
                 ))
                 .claim("role", user.getRole())
+                .claim("userId", user.getId())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
