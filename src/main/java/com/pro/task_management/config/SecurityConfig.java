@@ -1,5 +1,6 @@
 package com.pro.task_management.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +16,7 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
@@ -30,6 +29,9 @@ public class SecurityConfig {
     // Định nghĩa các endpoint công khai
 //    private final String[] PUBLIC_POST_ENDPOINTS = {"/users", "/auth/**"};
 //    private final String[] PUBLIC_ANY_ENDPOINTS = {"/auth/**"};
+
+    @Autowired
+    private CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     @Order(1) // Ưu tiên chạy FilterChain này trước
@@ -48,7 +50,7 @@ public class SecurityConfig {
     @Bean
     @Order(2) // Các request không khớp với chain 1 sẽ rơi vào đây
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource));
 
         httpSecurity.authorizeHttpRequests(request ->
                 request.anyRequest().authenticated());
@@ -72,17 +74,5 @@ public class SecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(10);
-    }
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5174"));
-        configuration.setAllowedMethods(List.of("*"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }
