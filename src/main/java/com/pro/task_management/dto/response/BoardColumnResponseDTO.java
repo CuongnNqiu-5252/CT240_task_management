@@ -12,6 +12,4 @@ public class BoardColumnResponseDTO {
 
     private String id;
     private String name;
-    private String projectId;
-    private String projectName;
 }
