@@ -13,6 +13,5 @@ import java.util.UUID;
 public class ProjectMemberResponseDTO {
 
     private UserResponseDTO user;
-    private ProjectResponseDTO project;
     private ProjectRole role;
 }
