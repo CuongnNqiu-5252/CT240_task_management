@@ -28,17 +28,16 @@ public class SecurityConfig {
     @Value("${jwt.signer-key}")
     private String signerKey;
     // Định nghĩa các endpoint công khai
-    private final String[] PUBLIC_POST_ENDPOINTS = {"/users", "/auth/**"};
-    private final String[] PUBLIC_ANY_ENDPOINTS = {"/auth/**"};
+//    private final String[] PUBLIC_POST_ENDPOINTS = {"/users", "/auth/**"};
+//    private final String[] PUBLIC_ANY_ENDPOINTS = {"/auth/**"};
 
     @Bean
     @Order(1) // Ưu tiên chạy FilterChain này trước
     public SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/users", "/auth/**") // Chỉ áp dụng chain này cho các path này
+                .securityMatcher("/auth/**") // Chỉ áp dụng chain này cho các path này
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated() // Các phương thức khác của /users vẫn cần auth (nếu muốn)
                 );
@@ -61,6 +60,7 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
+
     @Bean
     JwtDecoder jwtDecoder(){
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
