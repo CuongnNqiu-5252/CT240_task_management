@@ -1,5 +1,6 @@
 package com.pro.task_management.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +16,7 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
@@ -30,6 +29,9 @@ public class SecurityConfig {
     // Định nghĩa các endpoint công khai
 //    private final String[] PUBLIC_POST_ENDPOINTS = {"/users", "/auth/**"};
 //    private final String[] PUBLIC_ANY_ENDPOINTS = {"/auth/**"};
+
+    @Autowired
+    private CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     @Order(1) // Ưu tiên chạy FilterChain này trước
@@ -44,9 +46,6 @@ public class SecurityConfig {
         // Quan trọng: Không cấu hình oauth2ResourceServer ở đây
         return http.build();
     }
-
-    @Autowired
-    private CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     @Order(2) // Các request không khớp với chain 1 sẽ rơi vào đây
