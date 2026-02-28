@@ -3,6 +3,7 @@ package com.pro.task_management.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,20 +23,38 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
     @Value("${jwt.signer-key}")
     private String signerKey;
-    private final String[] PUBLIC_ENDPOINTS = {"/users", "/auth/**"};
+    // Định nghĩa các endpoint công khai
+    private final String[] PUBLIC_POST_ENDPOINTS = {"/users", "/auth/**"};
+    private final String[] PUBLIC_ANY_ENDPOINTS = {"/auth/**"};
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    @Order(1) // Ưu tiên chạy FilterChain này trước
+    public SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/users", "/auth/**") // Chỉ áp dụng chain này cho các path này
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().authenticated() // Các phương thức khác của /users vẫn cần auth (nếu muốn)
+                );
+        // Quan trọng: Không cấu hình oauth2ResourceServer ở đây
+        return http.build();
+    }
 
+    @Bean
+    @Order(2) // Các request không khớp với chain 1 sẽ rơi vào đây
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
+
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll()
-                        .anyRequest().authenticated());
+                request.anyRequest().authenticated());
+
         httpSecurity.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
-        httpSecurity.exceptionHandling(ex ->
-                ex.authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+        );
+
         return httpSecurity.build();
     }
     @Bean

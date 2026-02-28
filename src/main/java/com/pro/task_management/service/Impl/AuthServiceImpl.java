@@ -59,14 +59,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseDTO login(AuthRequestDTO request) {
         var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"User not existed"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not existed"));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated)
-            throw new AppException(HttpStatus.UNAUTHORIZED,"Unauthenticated");
+            throw new AppException(HttpStatus.CONFLICT, "Password is not correct");
 
         String token = null;
         try {
