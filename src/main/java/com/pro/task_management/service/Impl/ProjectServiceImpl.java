@@ -61,6 +61,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectMemberRepository.save(projectMember);
         return ProjectResponseDTO.builder()
+                .id(savedProject.getId())
                 .name(savedProject.getName())
                 .description(savedProject.getDescription())
                 .status(savedProject.getStatus())
@@ -90,6 +91,7 @@ public class ProjectServiceImpl implements ProjectService {
                             .owner(project.getProjectMembers().stream().filter(member -> {
                                 return member.getRole().equals(ProjectRole.MANAGER);
                             }).toList().getFirst().getUser().getUsername())
+                            .id(project.getId())
                             .name(project.getName())
                             .description(project.getDescription())
                             .status(project.getStatus())
