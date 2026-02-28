@@ -2,6 +2,8 @@ package com.pro.task_management.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -12,6 +14,6 @@ public class BoardColumnResponseDTO {
 
     private String id;
     private String name;
-    private String projectId;
-    private String projectName;
+
+    private List<TaskResponseDTO> listTaskResponseDTO;
 }

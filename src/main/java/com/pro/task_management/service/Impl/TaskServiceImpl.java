@@ -2,18 +2,24 @@ package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.TaskRequestDTO;
 import com.pro.task_management.dto.response.TaskResponseDTO;
+import com.pro.task_management.entity.BoardColumn;
 import com.pro.task_management.entity.Project;
 import com.pro.task_management.entity.Task;
 import com.pro.task_management.entity.User;
 import com.pro.task_management.enums.TaskStatus;
 import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.TaskMapper;
+import com.pro.task_management.repository.BoardColumnRepository;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.repository.TaskRepository;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +32,7 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
+    private final BoardColumnRepository boardColumnRepository;
     private final UserRepository userRepository;
     private final TaskMapper taskMapper;
 
@@ -34,7 +41,23 @@ public class TaskServiceImpl implements TaskService {
         Project project = projectRepository.findById(requestDTO.getProjectId())
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
-        User creator = userRepository.findById(requestDTO.getCreatorId())
+        // Lấy userId từ JWT
+        String userId = null;
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof JwtAuthenticationToken jwtAuth) {
+            Jwt jwt = jwtAuth.getToken();
+
+            // Lấy claim theo key
+            userId = jwt.getClaim("userId");
+        }
+
+        User creator = null;
+        if (userId != null) {
+            creator = userRepository.findById(userId)
+                    .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Not found"));
+        }
+
+        BoardColumn boardColumn = boardColumnRepository.findById(requestDTO.getBoardColumnId())
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
         Task task = Task.builder()
@@ -43,6 +66,7 @@ public class TaskServiceImpl implements TaskService {
                 .dueDate(requestDTO.getDueDate())
                 .status(requestDTO.getStatus() != null ? requestDTO.getStatus() : TaskStatus.TODO)
                 .project(project)
+                .column(boardColumn)
                 .creator(creator)
                 .build();
 
