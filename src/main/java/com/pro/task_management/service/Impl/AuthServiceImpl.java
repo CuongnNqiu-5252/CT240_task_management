@@ -4,6 +4,7 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.pro.task_management.dto.request.AuthRequestDTO;
+import com.pro.task_management.dto.request.ChangePasswordRequestDTO;
 import com.pro.task_management.dto.request.UserRequestDTO;
 import com.pro.task_management.dto.response.AuthResponseDTO;
 import com.pro.task_management.dto.response.UserResponseDTO;
@@ -36,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
     UserRepository userRepository;
     UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
 
     @NonFinal
     @Value("${jwt.signer-key}")
@@ -52,7 +54,6 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.toEntity(requestDTO);
         user.setDeleted(false);
         user.setRole(Role.USER);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
 
         User savedUser = userRepository.save(user);
@@ -63,8 +64,6 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseDTO login(AuthRequestDTO request) {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not existed"));
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
@@ -94,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
                 .issuer("trucllo.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(30, ChronoUnit.MINUTES).toEpochMilli()
+                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
                 .claim("role", user.getRole())
                 .claim("userId", user.getId())
@@ -111,6 +110,27 @@ public class AuthServiceImpl implements AuthService {
             log.error("Cannot create token", e);
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void changePassword(ChangePasswordRequestDTO requestDTO) {
+        var user = userRepository.findByUsername(requestDTO.getUsername())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not existed"));
+
+        // Kiểm tra mật khẩu cũ
+        if(!passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword())) {
+            throw new AppException(HttpStatus.CONFLICT, "Old password is not correct");
+        }
+
+        // Kiểm tra mật khẩu mới phải khác mật khẩu cũ
+        if(passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
+            throw new AppException(HttpStatus.CONFLICT, "New password must be different from old password");
+        }
+
+        // Mã hóa mật khẩu mới và lưu vào database
+        user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
+
+        userRepository.save(user);
     }
 
     @Override
