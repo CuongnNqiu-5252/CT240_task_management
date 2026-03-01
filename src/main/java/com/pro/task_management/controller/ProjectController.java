@@ -1,6 +1,7 @@
 package com.pro.task_management.controller;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.request.ProjectUpdateDTO;
 import com.pro.task_management.dto.response.ApiResponse;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
@@ -65,8 +66,8 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProjectResponseDTO>> updateProject(@PathVariable String id, @Valid @RequestBody ProjectRequestDTO requestDTO) {
-        ProjectResponseDTO response = projectService.updateProject(id, requestDTO);
+    public ResponseEntity<ApiResponse<ProjectResponseDTO>> updateProject(@PathVariable String id, @Valid @RequestBody ProjectUpdateDTO request) {
+        ProjectResponseDTO response = projectService.updateProject(id, request);
         return ResponseEntity.ok(ApiResponse.<ProjectResponseDTO>builder()
                 .data(response)
                 .build());

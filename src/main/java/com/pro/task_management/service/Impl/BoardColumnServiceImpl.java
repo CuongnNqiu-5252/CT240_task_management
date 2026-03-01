@@ -1,6 +1,7 @@
 package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.BoardColumnRequestDTO;
+import com.pro.task_management.dto.request.BoardColumnUpdateDTO;
 import com.pro.task_management.dto.response.BoardColumnResponseDTO;
 import com.pro.task_management.entity.BoardColumn;
 import com.pro.task_management.entity.Project;
@@ -11,6 +12,7 @@ import com.pro.task_management.repository.BoardColumnRepository;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.service.BoardColumnService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class BoardColumnServiceImpl implements BoardColumnService {
 
     private final BoardColumnRepository boardColumnRepository;
@@ -65,11 +68,14 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     }
 
     @Override
-    public BoardColumnResponseDTO updateBoardColumn(String id, BoardColumnRequestDTO requestDTO) {
+    public BoardColumnResponseDTO updateBoardColumn(String id, BoardColumnUpdateDTO requestDTO) {
         BoardColumn boardColumn = boardColumnRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
-        boardColumn.setName(requestDTO.getName());
+
+        boardColumnMapper.updateEntityFromDTO(requestDTO, boardColumn);
+
         BoardColumn updated = boardColumnRepository.save(boardColumn);
+
         return boardColumnMapper.toDTO(updated);
     }
 

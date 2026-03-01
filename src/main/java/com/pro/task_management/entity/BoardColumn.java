@@ -29,6 +29,7 @@ public class BoardColumn {
     @Builder.Default
     private List<String> taskOrderIds = new ArrayList<>();
 
+    // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pro_id", nullable = false)
     private Project project;

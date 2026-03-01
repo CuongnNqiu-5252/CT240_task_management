@@ -1,6 +1,7 @@
 package com.pro.task_management.mapper;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.request.ProjectUpdateDTO;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
 import com.pro.task_management.dto.response.ProjectResponseWithMembersDTO;
 import com.pro.task_management.entity.Project;
@@ -31,5 +32,5 @@ public interface ProjectMapper {
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "boardColumns", ignore = true)
     @Mapping(target = "projectMembers", ignore = true)
-    void updateEntityFromDTO(ProjectRequestDTO dto, @MappingTarget Project project);
+    void updateEntityFromDTO(ProjectUpdateDTO dto, @MappingTarget Project project);
 }
