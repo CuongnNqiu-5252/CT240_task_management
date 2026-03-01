@@ -77,6 +77,14 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task savedTask = taskRepository.save(task);
+
+        String newTaskId = savedTask.getId();
+        // Thêm ID của task mới vào cuối taskOrderIds của board column
+        List<String> taskOrderIds = boardColumn.getTaskOrderIds();
+        taskOrderIds.add(newTaskId);
+        boardColumn.setTaskOrderIds(taskOrderIds);
+        boardColumnRepository.save(boardColumn);
+
         return taskMapper.toDTO(savedTask);
     }
 

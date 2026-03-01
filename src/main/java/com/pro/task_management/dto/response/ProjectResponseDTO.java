@@ -17,7 +17,8 @@ public class ProjectResponseDTO {
     private String name;
     private String description;
     private ProjectStatus status;
+    private List<String> columnOrderIds;
     private ProjectMemberResponseDTO projectMemberResponseDTO;
     private String owner;
-    private List<BoardColumnResponseDTO> listBoardColumnResponseDTO;
+    private List<BoardColumnResponseDTO> boardColumns;
 }

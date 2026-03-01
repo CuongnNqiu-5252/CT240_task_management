@@ -14,6 +14,7 @@ public class BoardColumnResponseDTO {
 
     private String id;
     private String name;
+    private List<String> taskOrderIds;
 
-    private List<TaskResponseDTO> listTaskResponseDTO;
+    private List<TaskResponseDTO> tasks;
 }

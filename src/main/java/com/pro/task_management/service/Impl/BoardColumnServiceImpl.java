@@ -6,6 +6,7 @@ import com.pro.task_management.entity.BoardColumn;
 import com.pro.task_management.entity.Project;
 import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.BoardColumnMapper;
+import com.pro.task_management.mapper.ProjectMapper;
 import com.pro.task_management.repository.BoardColumnRepository;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.service.BoardColumnService;
@@ -23,6 +24,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
     private final BoardColumnRepository boardColumnRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectMapper projectMapper;
     private final BoardColumnMapper boardColumnMapper;
 
     @Override
@@ -36,6 +38,14 @@ public class BoardColumnServiceImpl implements BoardColumnService {
                 .build();
 
         BoardColumn saved = boardColumnRepository.save(boardColumn);
+
+        String newBoardColumnId = saved.getId();
+        // Thêm ID của board column mới vào cuối columnOrderIds của project
+        List<String> columnOrderIds = project.getColumnOrderIds();
+        columnOrderIds.add(newBoardColumnId);
+        project.setColumnOrderIds(columnOrderIds);
+        projectRepository.save(project);
+
         return boardColumnMapper.toDTO(saved);
     }
 
