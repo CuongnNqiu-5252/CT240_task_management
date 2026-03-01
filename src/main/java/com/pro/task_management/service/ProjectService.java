@@ -2,6 +2,7 @@ package com.pro.task_management.service;
 
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.request.ProjectUpdateDTO;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
 import com.pro.task_management.dto.response.ProjectResponseWithMembersDTO;
@@ -19,7 +20,7 @@ public interface ProjectService {
 
     List<ProjectResponseDTO> getProjectsByStatus(ProjectStatus status);
 
-    ProjectResponseDTO updateProject(String id, ProjectRequestDTO requestDTO);
+    ProjectResponseDTO updateProject(String id, ProjectUpdateDTO requestDTO);
 
     void deleteProject(String id);
 }

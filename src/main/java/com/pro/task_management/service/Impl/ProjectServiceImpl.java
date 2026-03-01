@@ -1,6 +1,7 @@
 package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.request.ProjectUpdateDTO;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.Pagination;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
@@ -68,6 +69,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .name(savedProject.getName())
                 .description(savedProject.getDescription())
                 .status(savedProject.getStatus())
+                .columnOrderIds(savedProject.getColumnOrderIds())
                 .projectMemberResponseDTO(projectMemberMapper.toDTO(projectMember))
                 .build();
     }
@@ -136,7 +138,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectResponseDTO updateProject(String id, ProjectRequestDTO requestDTO) {
+    public ProjectResponseDTO updateProject(String id, ProjectUpdateDTO requestDTO) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         projectMapper.updateEntityFromDTO(requestDTO, project);

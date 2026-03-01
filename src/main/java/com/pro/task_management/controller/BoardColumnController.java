@@ -1,6 +1,7 @@
 package com.pro.task_management.controller;
 
 import com.pro.task_management.dto.request.BoardColumnRequestDTO;
+import com.pro.task_management.dto.request.BoardColumnUpdateDTO;
 import com.pro.task_management.dto.response.BoardColumnResponseDTO;
 import com.pro.task_management.service.BoardColumnService;
 import jakarta.validation.Valid;
@@ -39,7 +40,7 @@ public class BoardColumnController {
     @PutMapping("/{id}")
     public ResponseEntity<BoardColumnResponseDTO> updateBoardColumn(
             @PathVariable String id,
-            @Valid @RequestBody BoardColumnRequestDTO requestDTO) {
+            @Valid @RequestBody BoardColumnUpdateDTO requestDTO) {
         BoardColumnResponseDTO response = boardColumnService.updateBoardColumn(id, requestDTO);
         return ResponseEntity.ok(response);
     }
