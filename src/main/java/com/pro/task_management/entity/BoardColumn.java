@@ -25,6 +25,10 @@ public class BoardColumn {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "task_order_ids")
+    @Builder.Default
+    private List<String> taskOrderIds = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pro_id", nullable = false)
     private Project project;

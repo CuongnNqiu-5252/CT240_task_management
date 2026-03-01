@@ -82,12 +82,13 @@ public class ProjectServiceImpl implements ProjectService {
         return ProjectResponseDTO.builder()
                 .id(project.getId())
                 .status(project.getStatus())
+                .columnOrderIds(project.getColumnOrderIds())
                 .name(project.getName())
                 .owner(project.getProjectMembers().stream().filter(member -> {
                     return member.getRole().equals(ProjectRole.MANAGER);
                 }).toList().getFirst().getUser().getUsername())
                 .description(project.getDescription())
-                .listBoardColumnResponseDTO(boardColumnMapper.toDTOList(project.getBoardColumns()))
+                .boardColumns(boardColumnMapper.toDTOList(project.getBoardColumns()))
                 .build();
     }
 
