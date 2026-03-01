@@ -1,6 +1,7 @@
 package com.pro.task_management.controller;
 
 import com.pro.task_management.dto.request.AuthRequestDTO;
+import com.pro.task_management.dto.request.ChangePasswordRequestDTO;
 import com.pro.task_management.dto.request.UserRequestDTO;
 import com.pro.task_management.dto.response.ApiResponse;
 import com.pro.task_management.dto.response.AuthResponseDTO;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,14 @@ public class AuthController {
         return new ResponseEntity<>(ApiResponse.<AuthResponseDTO>builder()
                 .data(authResponse)
                 .message("Login successfully")
+                .build(), HttpStatus.OK);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody ChangePasswordRequestDTO requestDTO) {
+        authService.changePassword(requestDTO);
+        return new ResponseEntity<>(ApiResponse.<Void>builder()
+                .message("Password changed successfully")
                 .build(), HttpStatus.OK);
     }
 
