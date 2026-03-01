@@ -1,6 +1,7 @@
 package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.TaskRequestDTO;
+import com.pro.task_management.dto.request.TaskUpdateDTO;
 import com.pro.task_management.dto.response.TaskResponseDTO;
 import com.pro.task_management.entity.BoardColumn;
 import com.pro.task_management.entity.Project;
@@ -125,23 +126,31 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponseDTO updateTask(String id, TaskRequestDTO requestDTO) {
+    public TaskResponseDTO updateTask(String id, TaskUpdateDTO requestDTO) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
 
-        task.setTitle(requestDTO.getTitle());
-        task.setDescription(requestDTO.getDescription());
-        task.setDueDate(requestDTO.getDueDate());
+//        task.setTitle(requestDTO.getTitle());
+//        task.setDescription(requestDTO.getDescription());
+//        task.setDueDate(requestDTO.getDueDate());
 
-        if (requestDTO.getStatus() != null) {
-            task.setStatus(requestDTO.getStatus());
-        }
+//        if (requestDTO.getStatus() != null) {
+//            task.setStatus(requestDTO.getStatus());
+//        }
 
         if (requestDTO.getAssigneeId() != null) {
             User assignee = userRepository.findById(requestDTO.getAssigneeId())
                     .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
             task.setAssignee(assignee);
         }
+
+        if (requestDTO.getBoardColumnId() != null) {
+            BoardColumn boardColumn = boardColumnRepository.findById(requestDTO.getBoardColumnId())
+                    .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+            task.setColumn(boardColumn);
+        }
+
+        taskMapper.updateEntityFromDTO(requestDTO, task);
 
         Task updatedTask = taskRepository.save(task);
         return taskMapper.toDTO(updatedTask);

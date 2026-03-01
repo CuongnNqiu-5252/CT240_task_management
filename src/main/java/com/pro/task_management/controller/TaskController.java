@@ -2,6 +2,7 @@ package com.pro.task_management.controller;
 
 
 import com.pro.task_management.dto.request.TaskRequestDTO;
+import com.pro.task_management.dto.request.TaskUpdateDTO;
 import com.pro.task_management.dto.response.TaskResponseDTO;
 import com.pro.task_management.enums.TaskStatus;
 import com.pro.task_management.service.TaskService;
@@ -59,7 +60,7 @@ public class TaskController {
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponseDTO> updateTask(
             @PathVariable String id,
-            @Valid @RequestBody TaskRequestDTO requestDTO) {
+            @Valid @RequestBody TaskUpdateDTO requestDTO) {
         TaskResponseDTO response = taskService.updateTask(id, requestDTO);
         return ResponseEntity.ok(response);
     }
