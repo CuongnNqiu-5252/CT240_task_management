@@ -50,9 +50,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO requestDTO) {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info(userId);
-        User user = userRepository.findByUsername(userId)
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        log.info(username);
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Not found"));
         Project project = projectMapper.toEntity(requestDTO);
         if (project.getStatus() == null) {
@@ -69,8 +69,10 @@ public class ProjectServiceImpl implements ProjectService {
                 .name(savedProject.getName())
                 .description(savedProject.getDescription())
                 .status(savedProject.getStatus())
+                .boardColumns(boardColumnMapper.toDTOList(savedProject.getBoardColumns()))
                 .columnOrderIds(savedProject.getColumnOrderIds())
                 .projectMemberResponseDTO(projectMemberMapper.toDTO(projectMember))
+                .owner(username)
                 .build();
     }
 
