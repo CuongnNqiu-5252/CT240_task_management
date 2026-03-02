@@ -6,9 +6,14 @@ spring:
     #    username: task_management_0ok9_user
     #    password: lxy0Sh84Koesc2w4aVYOspTVMqzwJaz3
     #    driver-class-name: org.postgresql.Driver
-    url: ${DATASOURCE_URL:jdbc:postgresql://db.knxxlzouxoflrhcaejhv.supabase.co:6543/postgres?sslmode=require}
+#    url: ${DATASOURCE_URL:jdbc:postgresql://db.knxxlzouxoflrhcaejhv.supabase.co:6543/postgres?sslmode=require}
+#    username: ${DATASOURCE_USERNAME:postgres}
+#    password: ${DATASOURCE_PASSWORD:ct240_trucllo} #wrong password, but it will be overridden by the environment variable
+
+    url: ${DATASOURCE_URL:jdbc:postgresql://db.mbsbmvyvflmekgwmgpob.supabase.co:5432/postgres}
     username: ${DATASOURCE_USERNAME:postgres}
-    password: ${DATASOURCE_PASSWORD:ct240_trucllo} #wrong password, but it will be overridden by the environment variable
+    password: ${DATASOURCE_PASSWORD:HhScNrscC4PScUdm}
+
     driver-class-name: org.postgresql.Driver
 
   jpa:
