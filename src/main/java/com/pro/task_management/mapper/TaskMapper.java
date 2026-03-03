@@ -21,6 +21,7 @@ public interface TaskMapper {
     @Mapping(source = "assignee.username", target = "assigneeName")
     @Mapping(source = "creator.id", target = "creatorId")
     @Mapping(source = "creator.username", target = "creatorName")
+    @Mapping(source = "column.id", target = "boardColumnId")
     TaskResponseDTO toDTO(Task task);
 
     List<TaskResponseDTO> toDTOList(List<Task> tasks);

@@ -24,4 +24,5 @@ public class TaskResponseDTO {
     private String assigneeName;
     private String creatorId;
     private String creatorName;
+    private String boardColumnId;
 }
