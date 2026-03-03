@@ -160,6 +160,13 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTask(String id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+
+        BoardColumn boardColumn = task.getColumn();
+        List<String> taskOrderIds = boardColumn.getTaskOrderIds();
+        taskOrderIds.remove(task.getId());
+        boardColumn.setTaskOrderIds(taskOrderIds);
+        boardColumnRepository.save(boardColumn);
+
         taskRepository.delete(task);
     }
 }
