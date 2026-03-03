@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,6 +24,7 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+
 
     @PostMapping
     public ResponseEntity<ApiResponse<ProjectResponseDTO>> createProject(@Valid @RequestBody ProjectRequestDTO requestDTO) {
@@ -73,6 +75,7 @@ public class ProjectController {
                 .build());
     }
 
+    @PreAuthorize("@permissionService.isManager(#id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<ProjectResponseDTO>> deleteProject(@PathVariable String id) {
         projectService.deleteProject(id);

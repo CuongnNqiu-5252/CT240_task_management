@@ -19,39 +19,41 @@ import com.pro.task_management.repository.ProjectMemberRepository;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.ProjectService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.support.SecurityWebApplicationContextUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProjectServiceImpl implements ProjectService {
 
-    private final BoardColumnMapper boardColumnMapper;
+    BoardColumnMapper boardColumnMapper;
 
-    private static final Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
-    private final ProjectRepository projectRepository;
-    private final ProjectMapper projectMapper;
-    private final ProjectMemberRepository projectMemberRepository;
-    private final UserRepository userRepository;
-    private final ProjectMemberMapper projectMemberMapper;
-
+    ProjectRepository projectRepository;
+    ProjectMapper projectMapper;
+    ProjectMemberRepository projectMemberRepository;
+    UserRepository userRepository;
+    ProjectMemberMapper projectMemberMapper;
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO requestDTO) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        log.info(username);
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Not found"));
         Project project = projectMapper.toEntity(requestDTO);
@@ -71,7 +73,6 @@ public class ProjectServiceImpl implements ProjectService {
                 .status(savedProject.getStatus())
                 .boardColumns(boardColumnMapper.toDTOList(savedProject.getBoardColumns()))
                 .columnOrderIds(savedProject.getColumnOrderIds())
-                .projectMemberResponseDTO(projectMemberMapper.toDTO(projectMember))
                 .owner(username)
                 .build();
     }
@@ -91,6 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .owner(project.getProjectMembers().stream().filter(member -> {
                     return member.getRole().equals(ProjectRole.MANAGER);
                 }).toList().getFirst().getUser().getUsername())
+                .projectMembersResponseDTO(projectMemberMapper.toDTOList(project.getProjectMembers()))
                 .description(project.getDescription())
                 .boardColumns(boardColumnMapper.toDTOList(project.getBoardColumns()))
                 .build();

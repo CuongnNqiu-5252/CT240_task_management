@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     @Value("${jwt.signer-key}")
     private String signerKey;
@@ -32,7 +34,8 @@ public class SecurityConfig {
 
     @Autowired
     private CorsConfigurationSource corsConfigurationSource;
-
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
     @Bean
     @Order(1) // Ưu tiên chạy FilterChain này trước
     public SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {
@@ -59,7 +62,9 @@ public class SecurityConfig {
                 oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
-
+        httpSecurity.exceptionHandling(ex -> ex
+                .accessDeniedHandler(accessDeniedHandler)
+        );
         return httpSecurity.build();
     }
 

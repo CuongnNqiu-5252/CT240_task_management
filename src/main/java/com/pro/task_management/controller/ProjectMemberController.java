@@ -9,6 +9,7 @@ import com.pro.task_management.service.ProjectMemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,8 @@ public class ProjectMemberController {
 
     private final ProjectMemberService projectMemberService;
 
+
+    @PreAuthorize("@permissionService.isManager(#projectId)")
     @PostMapping
     public ResponseEntity<ApiResponse<ProjectMemberResponseDTO>> addProjectMember(@Valid @RequestBody ProjectMemberRequestDTO requestDTO) {
         ProjectMemberResponseDTO response = projectMemberService.addProjectMember(requestDTO);
