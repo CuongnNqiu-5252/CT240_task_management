@@ -31,10 +31,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentResponseDTO createComment(CommentRequestDTO requestDTO) {
         Task task = taskRepository.findById(requestDTO.getTaskId())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Task Not found"));
 
         User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"User Not found"));
 
         Comment comment = Comment.builder()
                 .content(requestDTO.getContent())

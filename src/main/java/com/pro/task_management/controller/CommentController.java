@@ -1,12 +1,16 @@
 package com.pro.task_management.controller;
 
+import com.pro.task_management.dto.CommentEvent;
 import com.pro.task_management.dto.request.CommentRequestDTO;
+import com.pro.task_management.dto.response.ApiResponse;
 import com.pro.task_management.dto.response.CommentResponseDTO;
+import com.pro.task_management.enums.CommentEventType;
 import com.pro.task_management.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,11 +21,25 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping
-    public ResponseEntity<CommentResponseDTO> createComment(@Valid @RequestBody CommentRequestDTO requestDTO) {
+    public ResponseEntity<ApiResponse<CommentResponseDTO>> createComment(@Valid @RequestBody CommentRequestDTO requestDTO) {
         CommentResponseDTO response = commentService.createComment(requestDTO);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        String destination = "/topic/task/" + requestDTO.getTaskId() + "/comments";
+
+        CommentEvent event = CommentEvent.builder()
+                .payload(response)
+                .type(CommentEventType.COMMENT_CREATED)
+                .build();
+
+        messagingTemplate.convertAndSend(destination, event);
+
+        return new ResponseEntity<>(ApiResponse.<CommentResponseDTO>builder()
+                .data(response)
+                .message("Comment created successfully")
+                .build(), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -31,9 +49,15 @@ public class CommentController {
     }
 
     @GetMapping("/task/{taskId}")
-    public ResponseEntity<List<CommentResponseDTO>> getCommentsByTask(@PathVariable String taskId) {
+    public ResponseEntity<ApiResponse<List<CommentResponseDTO>>> getCommentsByTask(@PathVariable String taskId) {
         List<CommentResponseDTO> response = commentService.getCommentsByTask(taskId);
-        return ResponseEntity.ok(response);
+
+        ApiResponse<List<CommentResponseDTO>> apiResponse = ApiResponse.<List<CommentResponseDTO>>builder()
+                .data(response)
+                .message("Comments retrieved successfully")
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     @PutMapping("/{id}")
