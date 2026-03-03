@@ -85,6 +85,13 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     public void deleteBoardColumn(String id) {
         BoardColumn boardColumn = boardColumnRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+
+        Project project = boardColumn.getProject();
+        List<String> columnOrderIds = project.getColumnOrderIds();
+        columnOrderIds.remove(boardColumn.getId());
+        project.setColumnOrderIds(columnOrderIds);
+        projectRepository.save(project);
+
         boardColumnRepository.delete(boardColumn);
     }
 }
