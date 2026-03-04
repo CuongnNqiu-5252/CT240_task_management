@@ -39,6 +39,15 @@ public class AuthController {
                 .build(), HttpStatus.OK);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> getCurrentUser() {
+        UserResponseDTO userResponse = authService.getCurrentUser();
+        return new ResponseEntity<>(ApiResponse.<UserResponseDTO>builder()
+                .data(userResponse)
+                .message("Get current user successfully")
+                .build(), HttpStatus.OK);
+    }
+
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody ChangePasswordRequestDTO requestDTO) {
         authService.changePassword(requestDTO);
