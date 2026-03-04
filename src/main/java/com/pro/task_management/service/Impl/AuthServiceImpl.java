@@ -117,7 +117,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void changePassword(ChangePasswordRequestDTO requestDTO) {
-        var user = userRepository.findByUsername(requestDTO.getUsername())
+        String username = SecurityUtils.getCurrentUsername();
+        var user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not existed"));
 
         // Kiểm tra mật khẩu cũ
