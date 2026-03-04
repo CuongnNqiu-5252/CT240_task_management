@@ -40,10 +40,11 @@ public class SecurityConfig {
     @Order(1) // Ưu tiên chạy FilterChain này trước
     public SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/auth/**", "/error") // Chỉ áp dụng chain này cho các path này
+                .securityMatcher("/auth/**", "/error", "/ws/**") // Chỉ áp dụng chain này cho các path này
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/error").permitAll()
+                        .requestMatchers("/auth/**", "/error", "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 );
         // Quan trọng: Không cấu hình oauth2ResourceServer ở đây
@@ -69,7 +70,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtDecoder jwtDecoder(){
+    JwtDecoder jwtDecoder() {
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
         return NimbusJwtDecoder.withSecretKey(secretKeySpec)
                 .macAlgorithm(MacAlgorithm.HS512)
@@ -77,7 +78,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 }

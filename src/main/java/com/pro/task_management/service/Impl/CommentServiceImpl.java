@@ -1,6 +1,7 @@
 package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.CommentRequestDTO;
+import com.pro.task_management.dto.request.CommentUpdateRequestDTO;
 import com.pro.task_management.dto.response.CommentResponseDTO;
 import com.pro.task_management.entity.Comment;
 import com.pro.task_management.entity.Task;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,17 +32,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponseDTO createComment(CommentRequestDTO requestDTO) {
-        Task task = taskRepository.findById(requestDTO.getTaskId())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+        Task task = taskRepository.findById(requestDTO.getTaskId()).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Task Not found"));
 
-        User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+        User user = userRepository.findById(requestDTO.getUserId()).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User Not found"));
 
-        Comment comment = Comment.builder()
-                .content(requestDTO.getContent())
-                .task(task)
-                .user(user)
-                .build();
+        Comment comment = Comment.builder().content(requestDTO.getContent()).createdDate(LocalDateTime.now()).task(task).user(user).build();
 
         Comment saved = commentRepository.save(comment);
         return commentMapper.toDTO(saved);
@@ -49,8 +45,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public CommentResponseDTO getCommentById(String id) {
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Not found"));
         return commentMapper.toDTO(comment);
     }
 
@@ -62,18 +57,22 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponseDTO updateComment(String id, CommentRequestDTO requestDTO) {
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+    public CommentResponseDTO updateComment(String id, CommentUpdateRequestDTO requestDTO) {
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Comment Not found"));
         comment.setContent(requestDTO.getContent());
         Comment updated = commentRepository.save(comment);
         return commentMapper.toDTO(updated);
     }
 
     @Override
-    public void deleteComment(String id) {
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+    public CommentResponseDTO deleteComment(String id) {
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Not found"));
+
+        String taskId = comment.getTask().getId();
         commentRepository.delete(comment);
+
+        CommentResponseDTO response = commentMapper.toDTO(comment);
+        response.setTaskId(taskId); // Set taskId in the response for WebSocket notification
+        return response;
     }
 }

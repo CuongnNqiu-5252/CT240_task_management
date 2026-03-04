@@ -1,6 +1,7 @@
 package com.pro.task_management.service;
 
 import com.pro.task_management.dto.request.CommentRequestDTO;
+import com.pro.task_management.dto.request.CommentUpdateRequestDTO;
 import com.pro.task_management.dto.response.CommentResponseDTO;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface CommentService {
 
     List<CommentResponseDTO> getCommentsByTask(String taskId);
 
-    CommentResponseDTO updateComment(String id, CommentRequestDTO requestDTO);
+    CommentResponseDTO updateComment(String id, CommentUpdateRequestDTO requestDTO);
 
-    void deleteComment(String id);
+    CommentResponseDTO deleteComment(String id);
 }
