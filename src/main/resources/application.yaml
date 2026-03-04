@@ -10,9 +10,9 @@ spring:
 #    username: ${DATASOURCE_USERNAME:postgres}
 #    password: ${DATASOURCE_PASSWORD:ct240_trucllo} #wrong password, but it will be overridden by the environment variable
 
-    url: ${DATASOURCE_URL:jdbc:postgresql://db.mbsbmvyvflmekgwmgpob.supabase.co:5432/postgres}
-    username: ${DATASOURCE_USERNAME:postgres}
-    password: ${DATASOURCE_PASSWORD:HhScNrscC4PScUdm}
+    url: ${DATASOURCE_URL:jdbc:postgresql://ep-twilight-dust-a1ryh9ta-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require}
+    username: ${DATASOURCE_USERNAME:neondb_owner}
+    password: ${DATASOURCE_PASSWORD:npg_VoKr3tHjGP4l}
 
     driver-class-name: org.postgresql.Driver
 
