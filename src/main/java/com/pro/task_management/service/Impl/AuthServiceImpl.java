@@ -14,6 +14,7 @@ import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.UserMapper;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.AuthService;
+import com.pro.task_management.utils.SecurityUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +22,7 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,17 +41,18 @@ public class AuthServiceImpl implements AuthService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
+
     @NonFinal
     @Value("${jwt.signer-key}")
     protected String SIGNER_KEY;
 
     @Override
     public UserResponseDTO createUser(UserRequestDTO requestDTO) {
-        if(userRepository.existsByUsername(requestDTO.getUsername()))
-            throw new AppException(HttpStatus.CONFLICT,"User existed");
+        if (userRepository.existsByUsername(requestDTO.getUsername()))
+            throw new AppException(HttpStatus.CONFLICT, "User existed");
         // Thêm check email
-        if(userRepository.existsByEmail(requestDTO.getEmail()))
-            throw new AppException(HttpStatus.CONFLICT,"Email already existed");
+        if (userRepository.existsByEmail(requestDTO.getEmail()))
+            throw new AppException(HttpStatus.CONFLICT, "Email already existed");
 
         User user = userMapper.toEntity(requestDTO);
         user.setDeleted(false);
@@ -118,12 +121,12 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not existed"));
 
         // Kiểm tra mật khẩu cũ
-        if(!passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword())) {
             throw new AppException(HttpStatus.CONFLICT, "Old password is not correct");
         }
 
         // Kiểm tra mật khẩu mới phải khác mật khẩu cũ
-        if(passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
+        if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
             throw new AppException(HttpStatus.CONFLICT, "New password must be different from old password");
         }
 
@@ -131,6 +134,13 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
 
         userRepository.save(user);
+    }
+
+    @Override
+    public UserResponseDTO getCurrentUser() {
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        User user = userRepository.findById(currentUserId).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not found"));
+        return userMapper.toDTO(user);
     }
 
     @Override
