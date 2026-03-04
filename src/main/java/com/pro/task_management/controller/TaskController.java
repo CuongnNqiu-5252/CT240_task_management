@@ -1,6 +1,7 @@
 package com.pro.task_management.controller;
 
 
+import com.cloudinary.Api;
 import com.pro.task_management.dto.request.TaskRequestDTO;
 import com.pro.task_management.dto.request.TaskUpdateDTO;
 import com.pro.task_management.dto.response.ApiResponse;
@@ -26,10 +27,7 @@ public class TaskController {
     public ResponseEntity<ApiResponse<TaskResponseDTO>> createTask(@Valid @RequestBody TaskRequestDTO requestDTO) {
         TaskResponseDTO response = taskService.createTask(requestDTO);
 
-        ApiResponse<TaskResponseDTO> apiResponse = ApiResponse.<TaskResponseDTO>builder()
-                .data(response)
-                .message("Task created successfully")
-                .build();
+        ApiResponse<TaskResponseDTO> apiResponse = ApiResponse.<TaskResponseDTO>builder().data(response).message("Task created successfully").build();
 
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
@@ -38,10 +36,7 @@ public class TaskController {
     public ResponseEntity<ApiResponse<TaskResponseDTO>> getTaskById(@PathVariable String id) {
         TaskResponseDTO response = taskService.getTaskById(id);
 
-        ApiResponse<TaskResponseDTO> apiResponse = ApiResponse.<TaskResponseDTO>builder()
-                .data(response)
-                .message("Task retrieved successfully")
-                .build();
+        ApiResponse<TaskResponseDTO> apiResponse = ApiResponse.<TaskResponseDTO>builder().data(response).message("Task retrieved successfully").build();
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
@@ -71,15 +66,13 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskResponseDTO> updateTask(
-            @PathVariable String id,
-            @Valid @RequestBody TaskUpdateDTO requestDTO) {
+    public ResponseEntity<ApiResponse<TaskResponseDTO>> updateTask(@PathVariable String id, @Valid @RequestBody TaskUpdateDTO requestDTO) {
         TaskResponseDTO response = taskService.updateTask(id, requestDTO);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.<TaskResponseDTO>builder().data(response).build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable String id) {
+    public ResponseEntity<ApiResponse<TaskResponseDTO>> deleteTask(@PathVariable String id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }

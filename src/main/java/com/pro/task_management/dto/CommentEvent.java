@@ -13,4 +13,5 @@ import lombok.experimental.FieldDefaults;
 public class CommentEvent {
     CommentResponseDTO payload;
     CommentEventType type;
+    String actorId;
 }
