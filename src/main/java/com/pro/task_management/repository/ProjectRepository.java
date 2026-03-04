@@ -19,4 +19,7 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
 
     @Query("SELECT DISTINCT p FROM Project p LEFT JOIN FETCH p.projectMembers pm LEFT JOIN FETCH pm.user")
     Page<Project> findAllWithMembers(Pageable pageable);
+
+    @Query("SELECT DISTINCT p FROM Project p LEFT JOIN FETCH p.projectMembers pm LEFT JOIN FETCH pm.user WHERE pm.user.username = :username")
+    Page<Project> findByProjectMembersUsername(String username, Pageable pageable);
 }

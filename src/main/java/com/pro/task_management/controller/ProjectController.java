@@ -59,6 +59,20 @@ public class ProjectController {
                 .build());
     }
 
+    @GetMapping("/username")
+    public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getProjectsByUsername(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        PageResponse<List<ProjectResponseDTO>> serviceResponse = projectService.getProjectsByUsername(page, size);
+
+        return ResponseEntity.ok(ApiResponse.<List<ProjectResponseDTO>>builder()
+                .data(serviceResponse.getData())
+                .pagination(serviceResponse.getPagination())
+                .message("Projects retrieved successfully")
+                .build());
+    }
+
     @GetMapping("/status/{status}")
     public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getProjectsByStatus(@PathVariable ProjectStatus status) {
         List<ProjectResponseDTO> response = projectService.getProjectsByStatus(status);

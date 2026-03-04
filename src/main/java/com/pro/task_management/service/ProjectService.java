@@ -18,6 +18,8 @@ public interface ProjectService {
 
     PageResponse<List<ProjectResponseWithMembersDTO>> getAllProjects(int page, int size);
 
+    PageResponse<List<ProjectResponseDTO>> getProjectsByUsername(int page, int size);
+
     List<ProjectResponseDTO> getProjectsByStatus(ProjectStatus status);
 
     ProjectResponseDTO updateProject(String id, ProjectUpdateDTO requestDTO);
