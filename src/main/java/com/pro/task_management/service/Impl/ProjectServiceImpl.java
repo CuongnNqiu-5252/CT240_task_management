@@ -63,7 +63,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project savedProject = projectRepository.save(project);
 
         ProjectMember projectMember =
-                ProjectMember.create(user, savedProject, ProjectRole.MANAGER);
+                ProjectMember.create(user, savedProject, ProjectRole.OWNER);
 
         projectMemberRepository.save(projectMember);
         return ProjectResponseDTO.builder()
@@ -83,15 +83,17 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Project not found"));
 
+        String ownerUsername = projectMemberRepository
+                .findByProject_IdAndRole(project.getId(), ProjectRole.OWNER)
+                .map(member -> member.getUser().getUsername())
+                .orElse("Unknown");
 
         return ProjectResponseDTO.builder()
                 .id(project.getId())
                 .status(project.getStatus())
                 .columnOrderIds(project.getColumnOrderIds())
                 .name(project.getName())
-                .owner(project.getProjectMembers().stream().filter(member -> {
-                    return member.getRole().equals(ProjectRole.MANAGER);
-                }).toList().getFirst().getUser().getUsername())
+                .owner(ownerUsername)
                 .projectMembersResponseDTO(projectMemberMapper.toDTOList(project.getProjectMembers()))
                 .description(project.getDescription())
                 .boardColumns(boardColumnMapper.toDTOList(project.getBoardColumns()))
@@ -143,14 +145,17 @@ public class ProjectServiceImpl implements ProjectService {
         Page<Project> projectPage = projectRepository.findByProjectMembersUsername(username, pageable);
         List<ProjectResponseDTO> projectsDTO = projectPage.getContent().stream()
                 .map(project -> {
+                    String ownerUsername = projectMemberRepository
+                            .findByProject_IdAndRole(project.getId(), ProjectRole.OWNER)
+                            .map(member -> member.getUser().getUsername())
+                            .orElse("Unknown");
+
                     return ProjectResponseDTO.builder()
                             .id(project.getId())
                             .name(project.getName())
                             .description(project.getDescription())
                             .status(project.getStatus())
-                            .owner(project.getProjectMembers().stream().filter(member -> {
-                                return member.getRole().equals(ProjectRole.MANAGER);
-                            }).toList().getFirst().getUser().getUsername())
+                            .owner(ownerUsername)
                             .build();
                 })
                 .toList();
