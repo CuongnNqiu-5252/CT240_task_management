@@ -38,10 +38,10 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public ProjectMemberResponseDTO addProjectMember(ProjectMemberRequestDTO requestDTO) {
         User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not Found"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"User not Found"));
 
         Project project = projectRepository.findById(requestDTO.getProjectId())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Project not found"));
 
         ProjectMember projectMember = ProjectMember.create(user, project, requestDTO.getRole());
         ProjectMember savedMember = projectMemberRepository.save(projectMember);
