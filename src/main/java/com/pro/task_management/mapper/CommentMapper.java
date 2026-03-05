@@ -4,10 +4,11 @@ import com.pro.task_management.dto.response.CommentResponseDTO;
 import com.pro.task_management.entity.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CommentMapper {
 
     @Mapping(source = "user.id", target = "userId")

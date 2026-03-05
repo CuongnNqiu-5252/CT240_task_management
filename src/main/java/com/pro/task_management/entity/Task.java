@@ -71,4 +71,9 @@ public class Task {
     @JsonIgnore
     @Builder.Default
     private List<Notification> notifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    @Builder.Default
+    private List<TaskAssignees> taskAssignees = new ArrayList<>();
 }
