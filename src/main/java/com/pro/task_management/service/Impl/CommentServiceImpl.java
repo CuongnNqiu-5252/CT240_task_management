@@ -14,6 +14,7 @@ import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +58,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("@permissionService.isCommentOwner(#id)")
     public CommentResponseDTO updateComment(String id, CommentUpdateRequestDTO requestDTO) {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Comment Not found"));
         comment.setContent(requestDTO.getContent());
@@ -65,6 +67,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("@permissionService.isCommentOwner(#id) or @permissionService.isProjectOwnerByCommentId(#id)")
     public CommentResponseDTO deleteComment(String id) {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Not found"));
 
