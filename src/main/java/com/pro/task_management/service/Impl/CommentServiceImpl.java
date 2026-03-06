@@ -67,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @PreAuthorize("@permissionService.isCommentOwner(#id)")
+    @PreAuthorize("@permissionService.isCommentOwner(#id) or @permissionService.isProjectOwnerByCommentId(#id)")
     public CommentResponseDTO deleteComment(String id) {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Not found"));
 
