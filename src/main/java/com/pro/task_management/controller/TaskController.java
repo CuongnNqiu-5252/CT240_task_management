@@ -53,12 +53,6 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/assignee/{assigneeId}")
-    public ResponseEntity<List<TaskResponseDTO>> getTasksByAssignee(@PathVariable String assigneeId) {
-        List<TaskResponseDTO> response = taskService.getTasksByAssignee(assigneeId);
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/status/{status}")
     public ResponseEntity<List<TaskResponseDTO>> getTasksByStatus(@PathVariable TaskStatus status) {
         List<TaskResponseDTO> response = taskService.getTasksByStatus(status);
