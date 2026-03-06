@@ -37,11 +37,16 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Override
     public ProjectMemberResponseDTO addProjectMember(ProjectMemberRequestDTO requestDTO) {
-        User user = userRepository.findById(requestDTO.getUserId())
+        User user = userRepository.findByEmail(requestDTO.getEmail())
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"User not Found"));
 
         Project project = projectRepository.findById(requestDTO.getProjectId())
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Project not found"));
+
+        // Nếu đã tồn tại thì không thêm nữa
+        if (projectMemberRepository.existsByUserIdAndProjectId(user.getId(), project.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST,"User is already a member of the project");
+        }
 
         ProjectMember projectMember = ProjectMember.create(user, project, requestDTO.getRole());
         ProjectMember savedMember = projectMemberRepository.save(projectMember);

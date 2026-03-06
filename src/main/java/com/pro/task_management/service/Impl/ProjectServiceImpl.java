@@ -94,7 +94,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .columnOrderIds(project.getColumnOrderIds())
                 .name(project.getName())
                 .owner(ownerUsername)
-                .projectMembersResponseDTO(projectMemberMapper.toDTOList(project.getProjectMembers()))
+                .projectMembers(projectMemberMapper.toDTOList(project.getProjectMembers()))
                 .description(project.getDescription())
                 .boardColumns(boardColumnMapper.toDTOList(project.getBoardColumns()))
                 .build();

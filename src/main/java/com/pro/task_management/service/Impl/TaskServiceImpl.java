@@ -71,12 +71,6 @@ public class TaskServiceImpl implements TaskService {
                 .creator(creator)
                 .build();
 
-        if (requestDTO.getAssigneeId() != null) {
-            User assignee = userRepository.findById(requestDTO.getAssigneeId())
-                    .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
-            task.setAssignee(assignee);
-        }
-
         Task savedTask = taskRepository.save(task);
 
         String newTaskId = savedTask.getId();
@@ -113,13 +107,6 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TaskResponseDTO> getTasksByAssignee(String assigneeId) {
-        List<Task> tasks = taskRepository.findByAssigneeId(assigneeId);
-        return taskMapper.toDTOList(tasks);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<TaskResponseDTO> getTasksByStatus(TaskStatus status) {
         List<Task> tasks = taskRepository.findByStatus(status);
         return taskMapper.toDTOList(tasks);
@@ -138,11 +125,6 @@ public class TaskServiceImpl implements TaskService {
 //            task.setStatus(requestDTO.getStatus());
 //        }
 
-        if (requestDTO.getAssigneeId() != null) {
-            User assignee = userRepository.findById(requestDTO.getAssigneeId())
-                    .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
-            task.setAssignee(assignee);
-        }
 
         if (requestDTO.getBoardColumnId() != null) {
             BoardColumn boardColumn = boardColumnRepository.findById(requestDTO.getBoardColumnId())

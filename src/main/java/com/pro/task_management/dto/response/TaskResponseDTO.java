@@ -4,6 +4,7 @@ import com.pro.task_management.enums.TaskStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,9 +21,8 @@ public class TaskResponseDTO {
     private TaskStatus status;
     private String projectId;
     private String projectName;
-    private String assigneeId;
-    private String assigneeName;
     private String creatorId;
     private String creatorName;
     private String boardColumnId;
+    private List<TaskAssigneesResponseDTO> taskAssignees;
 }

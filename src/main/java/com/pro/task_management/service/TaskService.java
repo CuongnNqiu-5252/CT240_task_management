@@ -17,8 +17,6 @@ public interface TaskService {
 
     List<TaskResponseDTO> getTasksByProject(String projectId);
 
-    List<TaskResponseDTO> getTasksByAssignee(String assigneeId);
-
     List<TaskResponseDTO> getTasksByStatus(TaskStatus status);
 
     TaskResponseDTO updateTask(String id, TaskUpdateDTO requestDTO);
