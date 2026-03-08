@@ -39,7 +39,7 @@ public class PermissionService {
                 .existsByProject_IdAndUser_IdAndRole(
                         projectId,
                         user.getId(),
-                        ProjectRole.MANAGER
+                        ProjectRole.OWNER
                 );
     }
 
