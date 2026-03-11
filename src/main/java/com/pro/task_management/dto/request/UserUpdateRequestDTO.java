@@ -1,6 +1,7 @@
 package com.pro.task_management.dto.request;
 
 import com.pro.task_management.enums.Role;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,8 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 
 public class UserUpdateRequestDTO {
-    private String username;
     private String email;
     private String avatar;
-    private Role role;
 }
