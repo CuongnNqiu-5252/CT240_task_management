@@ -58,7 +58,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public PageResponse<List<ProjectMemberResponseDTO>> getProjectMembers(String projectId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<ProjectMember> projectMemberPage = projectMemberRepository.findAll(pageable);
+        Page<ProjectMember> projectMemberPage = projectMemberRepository.findByProjectId(projectId, pageable);
 
         List<ProjectMemberResponseDTO> projectMemberDTOPage = projectMemberPage.getContent().stream().map(projectMemberMapper::toDTO).toList();
 

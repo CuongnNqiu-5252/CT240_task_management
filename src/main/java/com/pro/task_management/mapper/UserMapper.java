@@ -19,7 +19,6 @@ public interface UserMapper {
     List<UserResponseDTO> toDTOList(List<User> users);
 
     @Mapping(target = "createdTasks", ignore = true)
-    @Mapping(target = "assignedTasks", ignore = true)
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "notifications", ignore = true)
     @Mapping(target = "projectMemberships", ignore = true)
@@ -28,7 +27,6 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "createdTasks", ignore = true)
-    @Mapping(target = "assignedTasks", ignore = true)
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "notifications", ignore = true)
     @Mapping(target = "projectMemberships", ignore = true)
@@ -37,7 +35,6 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "createdTasks", ignore = true)
-    @Mapping(target = "assignedTasks", ignore = true)
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "notifications", ignore = true)
     @Mapping(target = "projectMemberships", ignore = true)
