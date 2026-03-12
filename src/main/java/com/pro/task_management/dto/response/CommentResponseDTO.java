@@ -14,8 +14,7 @@ public class CommentResponseDTO {
     private String id;
     private String content;
     private LocalDateTime createdDate;
-    private String userId;
-    private String username;
+    private UserResponseDTO user;
     private String taskId;
     private String taskTitle;
 }

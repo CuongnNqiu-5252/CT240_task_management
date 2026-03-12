@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, ProjectMemberId> {
 
-    List<ProjectMember> findByProjectId(String projectId);
+    Page<ProjectMember> findByProjectId(String projectId, Pageable pageable);
 
     Page<ProjectMember> findByUserId(String userId, Pageable pageable);
 

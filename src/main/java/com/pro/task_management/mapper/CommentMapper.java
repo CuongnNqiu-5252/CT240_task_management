@@ -11,8 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CommentMapper {
 
-    @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "user.username", target = "username")
+    @Mapping(source = "user", target = "user")
     @Mapping(source = "task.id", target = "taskId")
     @Mapping(source = "task.title", target = "taskTitle")
     CommentResponseDTO toDTO(Comment comment);
