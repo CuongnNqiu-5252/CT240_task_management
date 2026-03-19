@@ -54,6 +54,22 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    public ProjectMemberResponseDTO updateProjectMember(ProjectMemberRequestDTO requestDTO) {
+        User user = userRepository.findByEmail(requestDTO.getEmail())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"User not Found"));
+
+        Project project = projectRepository.findById(requestDTO.getProjectId())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Project not found"));
+
+        ProjectMember projectMember = projectMemberRepository.findByUserIdAndProjectId(user.getId(), project.getId())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Project member not found"));
+
+        projectMember.setRole(requestDTO.getRole());
+        ProjectMember savedMember = projectMemberRepository.save(projectMember);
+        return projectMemberMapper.toDTO(savedMember);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public PageResponse<List<ProjectMemberResponseDTO>> getProjectMembers(String projectId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
