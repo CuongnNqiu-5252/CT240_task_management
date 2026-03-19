@@ -29,6 +29,14 @@ public class ProjectMemberController {
         return ResponseEntity.ok(ApiResponse.<ProjectMemberResponseDTO>builder().data(response).message("Project member added successfully").build());
     }
 
+    // Dùng PreAuthorize để kiểm tra nếu người dùng hiện tại là MANAGER HOẶC OWNER của dự án thì mới được phép thêm thành viên vào dự án
+    @PreAuthorize("@permissionService.isManager(#requestDTO.projectId) || @permissionService.isOwner(#requestDTO.projectId)")
+    @PutMapping
+    public ResponseEntity<ApiResponse<ProjectMemberResponseDTO>> updateProjectMember(@Valid @RequestBody ProjectMemberRequestDTO requestDTO) {
+        ProjectMemberResponseDTO response = projectMemberService.updateProjectMember(requestDTO);
+        return ResponseEntity.ok(ApiResponse.<ProjectMemberResponseDTO>builder().data(response).message("Project member updated successfully").build());
+    }
+
     @GetMapping("/project/{projectId}")
     public ResponseEntity<ApiResponse<List<ProjectMemberResponseDTO>>> getProjectMembers(
             @PathVariable String projectId,

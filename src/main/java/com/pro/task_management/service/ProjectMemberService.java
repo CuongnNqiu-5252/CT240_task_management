@@ -11,6 +11,8 @@ public interface ProjectMemberService {
 
     ProjectMemberResponseDTO addProjectMember(ProjectMemberRequestDTO requestDTO);
 
+    ProjectMemberResponseDTO updateProjectMember(ProjectMemberRequestDTO requestDTO);
+
     PageResponse<List<ProjectMemberResponseDTO>> getProjectMembers(String projectId, int page, int size);
 
     PageResponse<List<ProjectMemberResponseDTO>> getUserProjects(String userId, int page, int size);
