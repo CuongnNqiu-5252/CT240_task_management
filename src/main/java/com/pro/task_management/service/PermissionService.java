@@ -39,6 +39,19 @@ public class PermissionService {
                 .existsByProject_IdAndUser_IdAndRole(
                         projectId,
                         user.getId(),
+                        ProjectRole.MANAGER
+                );
+    }
+
+    public boolean isOwner(String projectId) {
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+        log.info(username);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User Not found"));
+        return projectMemberRepository
+                .existsByProject_IdAndUser_IdAndRole(
+                        projectId,
+                        user.getId(),
                         ProjectRole.OWNER
                 );
     }

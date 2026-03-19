@@ -19,7 +19,7 @@ public class TaskAssigneesController {
     private final TaskAssigneesService taskAssigneesService;
 
 
-    @PreAuthorize("@permissionService.isManager(#requestDTO.projectId)")
+    @PreAuthorize("@permissionService.isManager(#requestDTO.projectId) || @permissionService.isOwner(#requestDTO.projectId)")
     @PostMapping
     public ResponseEntity<ApiResponse<TaskAssigneesResponseDTO>> addAssigneeToTask(@Valid @RequestBody TaskAssigneesRequestDTO requestDTO) {
         TaskAssigneesResponseDTO response = taskAssigneesService.addAssigneeToTask(requestDTO);
@@ -40,7 +40,7 @@ public class TaskAssigneesController {
                 .build());
     }
 
-    @PreAuthorize("@permissionService.isManager(#requestDTO.projectId)")
+    @PreAuthorize("@permissionService.isManager(#requestDTO.projectId) || @permissionService.isOwner(#requestDTO.projectId)")
     @DeleteMapping
     public ResponseEntity<ApiResponse<TaskResponseDTO>> removeAssigneeOfTask(@Valid @RequestBody TaskAssigneesRequestDTO requestDTO) {
         taskAssigneesService.removeAssigneeOfTask(requestDTO.getUserId(), requestDTO.getTaskId());

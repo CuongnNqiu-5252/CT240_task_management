@@ -22,7 +22,7 @@ public class ProjectMemberController {
     private final ProjectMemberService projectMemberService;
 
     // Dùng PreAuthorize để kiểm tra nếu người dùng hiện tại là MANAGER HOẶC OWNER của dự án thì mới được phép thêm thành viên vào dự án
-    @PreAuthorize("@permissionService.isManager(#requestDTO.projectId)")
+    @PreAuthorize("@permissionService.isManager(#requestDTO.projectId) || @permissionService.isOwner(#requestDTO.projectId)")
     @PostMapping
     public ResponseEntity<ApiResponse<ProjectMemberResponseDTO>> addProjectMember(@Valid @RequestBody ProjectMemberRequestDTO requestDTO) {
         ProjectMemberResponseDTO response = projectMemberService.addProjectMember(requestDTO);
@@ -57,6 +57,7 @@ public class ProjectMemberController {
                 .build());
     }
 
+    @PreAuthorize("@permissionService.isManager(#projectId) || @permissionService.isOwner(#projectId)")
     @DeleteMapping("/user/{userId}/project/{projectId}")
     public ResponseEntity<ApiResponse<ProjectResponseDTO>> removeProjectMember(@PathVariable String userId, @PathVariable String projectId) {
         projectMemberService.removeProjectMember(userId, projectId);
