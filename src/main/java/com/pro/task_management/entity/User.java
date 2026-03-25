@@ -19,8 +19,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE users SET _destroy = true WHERE id = ?")
-@SQLRestriction("_destroy = false")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

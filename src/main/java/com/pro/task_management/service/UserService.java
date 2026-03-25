@@ -6,6 +6,7 @@ import com.pro.task_management.dto.request.UserUpdateRequestDTO;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.UserResponseDTO;
 import com.pro.task_management.entity.ProjectMember;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,9 +18,14 @@ public interface UserService {
 
     PageResponse<List<UserResponseDTO>> getAllUsers(int page, int size);
 
+    @Transactional(readOnly = true)
+    PageResponse<List<UserResponseDTO>> getAllUsersAD(int page, int size);
+
     List<UserResponseDTO> getAllActiveUsers();
 
     UserResponseDTO updateUser(String id, UserUpdateRequestDTO requestDTO);
+
+    UserResponseDTO restoreUser(String id);
 
     void deleteUser(String id);
 

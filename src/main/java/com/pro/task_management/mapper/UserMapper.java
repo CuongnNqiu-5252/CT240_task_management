@@ -4,10 +4,7 @@ import com.pro.task_management.dto.request.UserRequestDTO;
 import com.pro.task_management.dto.request.UserUpdateRequestDTO;
 import com.pro.task_management.dto.response.UserResponseDTO;
 import com.pro.task_management.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -32,11 +29,13 @@ public interface UserMapper {
     @Mapping(target = "projectMemberships", ignore = true)
     void updateEntityFromDTO(UserRequestDTO dto, @MappingTarget User user);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "createdTasks", ignore = true)
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "notifications", ignore = true)
     @Mapping(target = "projectMemberships", ignore = true)
-    void toUpdateDTO(UserUpdateRequestDTO dto, @MappingTarget User user);
+    void updateUserFromDto(UserUpdateRequestDTO dto, @MappingTarget User user);
+
 }

@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 
 public class UserUpdateRequestDTO {
+    private String password;
+    private String username;
     private String email;
     private String avatar;
 }

@@ -12,6 +12,8 @@ import com.pro.task_management.mapper.UserMapper;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ import java.util.List;
 @Transactional
 public class UserServiceImpl implements UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -73,6 +76,26 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public PageResponse<List<UserResponseDTO>> getAllUsersAD(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> users = userRepository.findAllIncludeDeleted(pageable);
+        List<UserResponseDTO> userResponseDTOS = users.getContent()
+                .stream().map(userMapper::toDTO)
+                .toList();
+        Pagination pagination = Pagination.builder()
+                .size(size)
+                .totalElements(users.getTotalElements())
+                .totalPages(users.getTotalPages())
+                .build();
+        return PageResponse.<List<UserResponseDTO>>builder()
+                .data(userResponseDTOS)
+                .pagination(pagination)
+                .build();
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<UserResponseDTO> getAllActiveUsers() {
@@ -84,11 +107,21 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO updateUser(String id, UserUpdateRequestDTO requestDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
-        userMapper.toUpdateDTO(requestDTO, user);
+        log.info("UpdatedUser {}", requestDTO.getUsername());
+        userMapper.updateUserFromDto(requestDTO,user);
         User updatedUser = userRepository.save(user);
         return userMapper.toDTO(updatedUser);
     }
+    @Override
+    public UserResponseDTO restoreUser(String id) {
+        User user = userRepository.findByIdIncludingDeleted(id)
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "User not found"));
 
+        user.setDeleted(false); // bật lại
+
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDTO(updatedUser);
+    }
     @Override
     public void deleteUser(String id) {
         User user = userRepository.findById(id)
