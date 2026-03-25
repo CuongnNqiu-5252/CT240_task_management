@@ -1,6 +1,7 @@
 package com.pro.task_management.repository;
 
 import com.pro.task_management.entity.Notification;
+import com.pro.task_management.entity.TaskAssigneesId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +18,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
     void deleteByUserId(String userId);
 
     void deleteByTaskId(String taskId);
+
+    boolean existsByTask_IdAndUser_IdAndContent(
+            String taskId,
+            String userId,
+            String content
+    );
 }

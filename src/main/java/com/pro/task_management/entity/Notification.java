@@ -30,11 +30,11 @@ public class Notification {
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dua_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "con_id")
+    @JoinColumn(name = "task_id")
     private Task task;
 
     public String getId() {

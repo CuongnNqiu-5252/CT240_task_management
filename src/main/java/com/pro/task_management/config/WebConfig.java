@@ -20,6 +20,7 @@ public class WebConfig {
         List<String> allowedMethods = Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS");
 
         config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("http://localhost:5174");
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("http://127.0.0.1:5500");
         config.addAllowedOrigin("https://frontend-project-management-lac.vercel.app");

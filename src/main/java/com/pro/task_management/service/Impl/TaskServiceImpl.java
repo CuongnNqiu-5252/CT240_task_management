@@ -72,7 +72,6 @@ public class TaskServiceImpl implements TaskService {
                 .build();
 
         Task savedTask = taskRepository.save(task);
-
         String newTaskId = savedTask.getId();
         // Thêm ID của task mới vào cuối taskOrderIds của board column
         List<String> taskOrderIds = boardColumn.getTaskOrderIds();
@@ -135,6 +134,7 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.updateEntityFromDTO(requestDTO, task);
 
         Task updatedTask = taskRepository.save(task);
+
         return taskMapper.toDTO(updatedTask);
     }
 

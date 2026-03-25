@@ -2,12 +2,13 @@ package com.pro.task_management.controller;
 
 import com.pro.task_management.dto.request.NotificationRequestDTO;
 import com.pro.task_management.dto.response.NotificationResponseDTO;
-import com.pro.task_management.service.NotificationService;
+import com.pro.task_management.service.Impl.NotificationServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,8 +18,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    private final NotificationServiceImpl notificationService;
 
+    @GetMapping("/subscribe/{userId}")
+    public SseEmitter stream(@PathVariable String userId) {
+        return notificationService.subcribe(userId);
+    }
     @PostMapping
     public ResponseEntity<NotificationResponseDTO> createNotification(@Valid @RequestBody NotificationRequestDTO requestDTO) {
         NotificationResponseDTO response = notificationService.createNotification(requestDTO);

@@ -37,7 +37,8 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/auth/login",
             "/auth/register",
-            "/ws/**"
+            "/ws/**",
+            "/notifications/subscribe/**"
     };
 
     @Bean
