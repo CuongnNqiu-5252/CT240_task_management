@@ -10,10 +10,15 @@ import com.pro.task_management.service.CloudinaryService;
 import com.pro.task_management.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +29,7 @@ import java.util.Map;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final CloudinaryService cloudinaryService;
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
     @PostMapping
@@ -32,7 +37,10 @@ public class UserController {
         UserResponseDTO response = userService.createUser(requestDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<UserResponseDTO> restoreUser(@PathVariable String id) {
+        return ResponseEntity.ok(userService.restoreUser(id));
+    }
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable String id) {
         UserResponseDTO response = userService.getUserById(id);
@@ -50,28 +58,31 @@ public class UserController {
                 .data(serviceResponse.getData())
                 .build());
     }
+    @GetMapping("/AllUser")
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAllUsersAD(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authorities: " + auth.getAuthorities());
+        PageResponse<List<UserResponseDTO>> serviceResponse = userService.getAllUsersAD(page, size);
+        return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
+                .message("Get successes")
+                .data(serviceResponse.getData())
+                .build());
+    }
 
     @GetMapping("/active")
     public ResponseEntity<List<UserResponseDTO>> getAllActiveUsers() {
         List<UserResponseDTO> response = userService.getAllActiveUsers();
         return ResponseEntity.ok(response);
     }
-
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PreAuthorize("@securityService.isOwner(#id) or hasAuthority('ADMIN')")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(
             @PathVariable String id,
-            @ModelAttribute UserUpdateRequestDTO requestDTO,
-            @RequestParam(value = "image", required = false) MultipartFile file) {
-
-        String imageUrl = "";
-
-        // Nếu có file thì upload
-        if (file != null && !file.isEmpty()) {
-            Map data = cloudinaryService.upload(file);
-            imageUrl = data.get("secure_url").toString();
-        }
-
-        requestDTO.setAvatar(imageUrl);
+            @RequestBody UserUpdateRequestDTO requestDTO) {
 
         UserResponseDTO response = userService.updateUser(id, requestDTO);
         return ResponseEntity.ok(ApiResponse.<UserResponseDTO>builder()

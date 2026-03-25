@@ -3,6 +3,7 @@ package com.pro.task_management.dto.response;
 import com.pro.task_management.enums.ProjectStatus;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,5 +17,8 @@ public class ProjectResponseDTO {
     private String name;
     private String description;
     private ProjectStatus status;
-    private ProjectMemberResponseDTO projectMemberResponseDTO;
+    private List<String> columnOrderIds;
+    private List<ProjectMemberResponseDTO> projectMembers;
+    private String owner;
+    private List<BoardColumnResponseDTO> boardColumns;
 }

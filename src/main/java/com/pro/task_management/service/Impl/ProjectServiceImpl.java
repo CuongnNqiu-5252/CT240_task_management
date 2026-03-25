@@ -1,53 +1,60 @@
 package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.request.ProjectUpdateDTO;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.Pagination;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
+import com.pro.task_management.dto.response.ProjectResponseWithMembersDTO;
 import com.pro.task_management.entity.Project;
 import com.pro.task_management.entity.ProjectMember;
 import com.pro.task_management.entity.User;
 import com.pro.task_management.enums.ProjectRole;
 import com.pro.task_management.enums.ProjectStatus;
 import com.pro.task_management.exception.AppException;
+import com.pro.task_management.mapper.BoardColumnMapper;
 import com.pro.task_management.mapper.ProjectMapper;
 import com.pro.task_management.mapper.ProjectMemberMapper;
 import com.pro.task_management.repository.ProjectMemberRepository;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.repository.UserRepository;
 import com.pro.task_management.service.ProjectService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.support.SecurityWebApplicationContextUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProjectServiceImpl implements ProjectService {
 
-    private static final Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
-    private final ProjectRepository projectRepository;
-    private final ProjectMapper projectMapper;
-    private final ProjectMemberRepository projectMemberRepository;
-    private final UserRepository userRepository;
-    private final ProjectMemberMapper projectMemberMapper;
+    BoardColumnMapper boardColumnMapper;
 
+    ProjectRepository projectRepository;
+    ProjectMapper projectMapper;
+    ProjectMemberRepository projectMemberRepository;
+    UserRepository userRepository;
+    ProjectMemberMapper projectMemberMapper;
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO requestDTO) {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info(userId);
-        User user = userRepository.findByUsername(userId)
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Not found"));
         Project project = projectMapper.toEntity(requestDTO);
         if (project.getStatus() == null) {
@@ -56,14 +63,17 @@ public class ProjectServiceImpl implements ProjectService {
         Project savedProject = projectRepository.save(project);
 
         ProjectMember projectMember =
-                ProjectMember.create(user, savedProject, ProjectRole.MANAGER);
+                ProjectMember.create(user, savedProject, ProjectRole.OWNER);
 
         projectMemberRepository.save(projectMember);
         return ProjectResponseDTO.builder()
+                .id(savedProject.getId())
                 .name(savedProject.getName())
                 .description(savedProject.getDescription())
                 .status(savedProject.getStatus())
-                .projectMemberResponseDTO(projectMemberMapper.toDTO(projectMember))
+                .boardColumns(boardColumnMapper.toDTOList(savedProject.getBoardColumns()))
+                .columnOrderIds(savedProject.getColumnOrderIds())
+                .owner(username)
                 .build();
     }
 
@@ -71,20 +81,83 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(readOnly = true)
     public ProjectResponseDTO getProjectById(String id) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
-        return projectMapper.toDTO(project);
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Project not found"));
+
+        String ownerUsername = projectMemberRepository
+                .findByProject_IdAndRole(project.getId(), ProjectRole.OWNER)
+                .map(member -> member.getUser().getUsername())
+                .orElse("Unknown");
+
+        return ProjectResponseDTO.builder()
+                .id(project.getId())
+                .status(project.getStatus())
+                .columnOrderIds(project.getColumnOrderIds())
+                .name(project.getName())
+                .owner(ownerUsername)
+                .projectMembers(projectMemberMapper.toDTOList(project.getProjectMembers()))
+                .description(project.getDescription())
+                .boardColumns(boardColumnMapper.toDTOList(project.getBoardColumns()))
+                .build();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size) {
+    public PageResponse<List<ProjectResponseWithMembersDTO>> getAllProjects(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Project> projectPage = projectRepository.findAll(pageable);
+        Page<Project> projectPage = projectRepository.findAllWithMembers(pageable);
 
+        List<ProjectResponseWithMembersDTO> projectsDTO = projectPage.getContent().stream()
+                .map(project -> {
+                    return ProjectResponseWithMembersDTO.builder()
+                            .owner(project.getProjectMembers().stream().filter(member -> {
+                                return member.getRole().equals(ProjectRole.MANAGER);
+                            }).toList().getFirst().getUser().getUsername())
+                            .id(project.getId())
+                            .name(project.getName())
+                            .description(project.getDescription())
+                            .status(project.getStatus())
+                            .members(projectMemberMapper.toDTOList(project.getProjectMembers()))
+                            .build();
+                })
+                .toList();
+
+        Pagination pagination = Pagination.builder()
+                .page(page)
+                .size(size)
+                .totalElements(projectPage.getTotalElements())
+                .totalPages(projectPage.getTotalPages())
+                .build();
+
+        return PageResponse.<List<ProjectResponseWithMembersDTO>>builder()
+                .data(projectsDTO)
+                .pagination(pagination)
+                .build();
+    }
+
+    // Trả về danh sách project mà user nằm trong projectMembers.User.Username
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<List<ProjectResponseDTO>> getProjectsByUsername(int page, int size) {
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Project> projectPage = projectRepository.findByProjectMembersUsername(username, pageable);
         List<ProjectResponseDTO> projectsDTO = projectPage.getContent().stream()
-                .map(projectMapper::toDTO)
+                .map(project -> {
+                    String ownerUsername = projectMemberRepository
+                            .findByProject_IdAndRole(project.getId(), ProjectRole.OWNER)
+                            .map(member -> member.getUser().getUsername())
+                            .orElse("Unknown");
+
+                    return ProjectResponseDTO.builder()
+                            .id(project.getId())
+                            .name(project.getName())
+                            .description(project.getDescription())
+                            .status(project.getStatus())
+                            .owner(ownerUsername)
+                            .build();
+                })
                 .toList();
 
         Pagination pagination = Pagination.builder()
@@ -108,7 +181,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectResponseDTO updateProject(String id, ProjectRequestDTO requestDTO) {
+    public ProjectResponseDTO updateProject(String id, ProjectUpdateDTO requestDTO) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
         projectMapper.updateEntityFromDTO(requestDTO, project);

@@ -2,8 +2,10 @@ package com.pro.task_management.service;
 
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.request.ProjectUpdateDTO;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
+import com.pro.task_management.dto.response.ProjectResponseWithMembersDTO;
 import com.pro.task_management.enums.ProjectStatus;
 
 import java.util.List;
@@ -14,11 +16,13 @@ public interface ProjectService {
 
     ProjectResponseDTO getProjectById(String id);
 
-    PageResponse<List<ProjectResponseDTO>> getAllProjects(int page, int size);
+    PageResponse<List<ProjectResponseWithMembersDTO>> getAllProjects(int page, int size);
+
+    PageResponse<List<ProjectResponseDTO>> getProjectsByUsername(int page, int size);
 
     List<ProjectResponseDTO> getProjectsByStatus(ProjectStatus status);
 
-    ProjectResponseDTO updateProject(String id, ProjectRequestDTO requestDTO);
+    ProjectResponseDTO updateProject(String id, ProjectUpdateDTO requestDTO);
 
     void deleteProject(String id);
 }

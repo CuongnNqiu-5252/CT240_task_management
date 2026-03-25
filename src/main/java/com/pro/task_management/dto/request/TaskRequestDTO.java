@@ -25,8 +25,11 @@ public class TaskRequestDTO {
     @NotNull(message = "Project ID is required")
     private String projectId;
 
+    @NotNull(message = "Board column ID is required")
+    private String boardColumnId;
+
     private String assigneeId;
 
-    @NotNull(message = "Creator ID is required")
-    private String creatorId;
+//    @NotNull(message = "Creator ID is required")
+//    private String creatorId;
 }

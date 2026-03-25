@@ -37,13 +37,34 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Override
     public ProjectMemberResponseDTO addProjectMember(ProjectMemberRequestDTO requestDTO) {
-        User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not Found"));
+        User user = userRepository.findByEmail(requestDTO.getEmail())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"User not Found"));
 
         Project project = projectRepository.findById(requestDTO.getProjectId())
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Project not found"));
+
+        // Nếu đã tồn tại thì không thêm nữa
+        if (projectMemberRepository.existsByUserIdAndProjectId(user.getId(), project.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST,"User is already a member of the project");
+        }
 
         ProjectMember projectMember = ProjectMember.create(user, project, requestDTO.getRole());
+        ProjectMember savedMember = projectMemberRepository.save(projectMember);
+        return projectMemberMapper.toDTO(savedMember);
+    }
+
+    @Override
+    public ProjectMemberResponseDTO updateProjectMember(ProjectMemberRequestDTO requestDTO) {
+        User user = userRepository.findByEmail(requestDTO.getEmail())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"User not Found"));
+
+        Project project = projectRepository.findById(requestDTO.getProjectId())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Project not found"));
+
+        ProjectMember projectMember = projectMemberRepository.findByUserIdAndProjectId(user.getId(), project.getId())
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Project member not found"));
+
+        projectMember.setRole(requestDTO.getRole());
         ProjectMember savedMember = projectMemberRepository.save(projectMember);
         return projectMemberMapper.toDTO(savedMember);
     }
@@ -53,7 +74,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public PageResponse<List<ProjectMemberResponseDTO>> getProjectMembers(String projectId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<ProjectMember> projectMemberPage = projectMemberRepository.findAll(pageable);
+        Page<ProjectMember> projectMemberPage = projectMemberRepository.findByProjectId(projectId, pageable);
 
         List<ProjectMemberResponseDTO> projectMemberDTOPage = projectMemberPage.getContent().stream().map(projectMemberMapper::toDTO).toList();
 

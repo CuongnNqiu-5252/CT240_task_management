@@ -2,7 +2,10 @@ package com.pro.task_management.repository;
 
 import com.pro.task_management.entity.Project;
 import com.pro.task_management.enums.ProjectStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,5 +17,19 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
 
     List<Project> findByNameContainingIgnoreCase(String name);
 
+    @Query("SELECT DISTINCT p FROM Project p LEFT JOIN FETCH p.projectMembers pm LEFT JOIN FETCH pm.user")
+    Page<Project> findAllWithMembers(Pageable pageable);
 
+    @Query("SELECT DISTINCT p FROM Project p LEFT JOIN FETCH p.projectMembers pm LEFT JOIN FETCH pm.user WHERE pm.user.username = :username")
+    Page<Project> findByProjectMembersUsername(String username, Pageable pageable);
+
+    @Query("SELECT COUNT(p) > 0 FROM Project p " +
+            "JOIN p.boardColumns col " +
+            "JOIN col.tasks task " +
+            "JOIN task.comments cmt " +
+            "JOIN p.projectMembers pm " +
+            "WHERE cmt.id = :commentId " +
+            "AND pm.user.id = :userId " +
+            "AND pm.role = com.pro.task_management.enums.ProjectRole.OWNER")
+    boolean isProjectOwnerByCommentId(String commentId, String userId);
 }

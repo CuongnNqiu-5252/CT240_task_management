@@ -12,8 +12,8 @@ import lombok.*;
 @Builder
 public class ProjectMemberRequestDTO {
 
-    @NotNull(message = "User ID is required")
-    private String userId;
+    @NotNull(message = "Email is required")
+    private String email;
 
     @NotNull(message = "Project ID is required")
     private String projectId;

@@ -45,17 +45,17 @@ public class Task {
 
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "con_id", nullable = false)
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "column_id", nullable = false)
+    private BoardColumn column;
 
     private boolean deadlineNotified = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ngu_id")
-    private User assignee;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "col_id", nullable = false)
+    @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -67,4 +67,9 @@ public class Task {
     @JsonIgnore
     @Builder.Default
     private List<Notification> notifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    @Builder.Default
+    private List<TaskAssignees> taskAssignees = new ArrayList<>();
 }

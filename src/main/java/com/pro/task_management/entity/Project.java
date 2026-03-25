@@ -33,6 +33,10 @@ public class Project {
     @Builder.Default
     private ProjectStatus status = ProjectStatus.ACTIVE;
 
+    @Column(name = "column_order_ids")
+    @Builder.Default
+    private List<String> columnOrderIds = new ArrayList<>();
+
     // Relationships
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore

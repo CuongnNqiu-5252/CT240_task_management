@@ -19,8 +19,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE users SET _destroy = true WHERE id = ?")
-@SQLRestriction("_destroy = false")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -52,11 +50,6 @@ public class User {
     @Builder.Default
     private List<Task> createdTasks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    @Builder.Default
-    private List<Task> assignedTasks = new ArrayList<>();
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default
@@ -71,4 +64,9 @@ public class User {
     @JsonIgnore
     @Builder.Default
     private List<ProjectMember> projectMemberships = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    @Builder.Default
+    private List<TaskAssignees> taskAssignees = new ArrayList<>();
 }

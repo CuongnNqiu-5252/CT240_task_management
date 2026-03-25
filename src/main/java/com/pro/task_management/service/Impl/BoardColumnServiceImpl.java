@@ -1,16 +1,20 @@
 package com.pro.task_management.service.Impl;
 
 import com.pro.task_management.dto.request.BoardColumnRequestDTO;
+import com.pro.task_management.dto.request.BoardColumnUpdateDTO;
 import com.pro.task_management.dto.response.BoardColumnResponseDTO;
 import com.pro.task_management.entity.BoardColumn;
 import com.pro.task_management.entity.Project;
 import com.pro.task_management.exception.AppException;
 import com.pro.task_management.mapper.BoardColumnMapper;
+import com.pro.task_management.mapper.ProjectMapper;
 import com.pro.task_management.repository.BoardColumnRepository;
 import com.pro.task_management.repository.ProjectRepository;
 import com.pro.task_management.service.BoardColumnService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +23,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class BoardColumnServiceImpl implements BoardColumnService {
 
     private final BoardColumnRepository boardColumnRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectMapper projectMapper;
     private final BoardColumnMapper boardColumnMapper;
 
     @Override
@@ -36,8 +42,17 @@ public class BoardColumnServiceImpl implements BoardColumnService {
                 .build();
 
         BoardColumn saved = boardColumnRepository.save(boardColumn);
+
+        String newBoardColumnId = saved.getId();
+        // Thêm ID của board column mới vào cuối columnOrderIds của project
+        List<String> columnOrderIds = project.getColumnOrderIds();
+        columnOrderIds.add(newBoardColumnId);
+        project.setColumnOrderIds(columnOrderIds);
+        projectRepository.save(project);
+
         return boardColumnMapper.toDTO(saved);
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -55,11 +70,14 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     }
 
     @Override
-    public BoardColumnResponseDTO updateBoardColumn(String id, BoardColumnRequestDTO requestDTO) {
+    public BoardColumnResponseDTO updateBoardColumn(String id, BoardColumnUpdateDTO requestDTO) {
         BoardColumn boardColumn = boardColumnRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
-        boardColumn.setName(requestDTO.getName());
+
+        boardColumnMapper.updateEntityFromDTO(requestDTO, boardColumn);
+
         BoardColumn updated = boardColumnRepository.save(boardColumn);
+
         return boardColumnMapper.toDTO(updated);
     }
 
@@ -67,6 +85,13 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     public void deleteBoardColumn(String id) {
         BoardColumn boardColumn = boardColumnRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND,"Not found"));
+
+        Project project = boardColumn.getProject();
+        List<String> columnOrderIds = project.getColumnOrderIds();
+        columnOrderIds.remove(boardColumn.getId());
+        project.setColumnOrderIds(columnOrderIds);
+        projectRepository.save(project);
+
         boardColumnRepository.delete(boardColumn);
     }
 }

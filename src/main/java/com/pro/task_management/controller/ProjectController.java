@@ -1,15 +1,18 @@
 package com.pro.task_management.controller;
 
 import com.pro.task_management.dto.request.ProjectRequestDTO;
+import com.pro.task_management.dto.request.ProjectUpdateDTO;
 import com.pro.task_management.dto.response.ApiResponse;
 import com.pro.task_management.dto.response.PageResponse;
 import com.pro.task_management.dto.response.ProjectResponseDTO;
+import com.pro.task_management.dto.response.ProjectResponseWithMembersDTO;
 import com.pro.task_management.enums.ProjectStatus;
 import com.pro.task_management.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -21,6 +24,7 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+
 
     @PostMapping
     public ResponseEntity<ApiResponse<ProjectResponseDTO>> createProject(@Valid @RequestBody ProjectRequestDTO requestDTO) {
@@ -41,12 +45,26 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getAllProjects(
+    public ResponseEntity<ApiResponse<List<ProjectResponseWithMembersDTO>>> getAllProjects(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        PageResponse<List<ProjectResponseDTO>> serviceResponse = projectService.getAllProjects(page, size);
+        PageResponse<List<ProjectResponseWithMembersDTO>> serviceResponse = projectService.getAllProjects(page, size);
 
+
+        return ResponseEntity.ok(ApiResponse.<List<ProjectResponseWithMembersDTO>>builder()
+                .data(serviceResponse.getData())
+                .pagination(serviceResponse.getPagination())
+                .message("Projects retrieved successfully")
+                .build());
+    }
+
+    @GetMapping("/username")
+    public ResponseEntity<ApiResponse<List<ProjectResponseDTO>>> getProjectsByUsername(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        PageResponse<List<ProjectResponseDTO>> serviceResponse = projectService.getProjectsByUsername(page, size);
 
         return ResponseEntity.ok(ApiResponse.<List<ProjectResponseDTO>>builder()
                 .data(serviceResponse.getData())
@@ -64,13 +82,14 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProjectResponseDTO>> updateProject(@PathVariable String id, @Valid @RequestBody ProjectRequestDTO requestDTO) {
-        ProjectResponseDTO response = projectService.updateProject(id, requestDTO);
+    public ResponseEntity<ApiResponse<ProjectResponseDTO>> updateProject(@PathVariable String id, @Valid @RequestBody ProjectUpdateDTO request) {
+        ProjectResponseDTO response = projectService.updateProject(id, request);
         return ResponseEntity.ok(ApiResponse.<ProjectResponseDTO>builder()
                 .data(response)
                 .build());
     }
 
+    @PreAuthorize("@permissionService.isManager(#id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<ProjectResponseDTO>> deleteProject(@PathVariable String id) {
         projectService.deleteProject(id);
